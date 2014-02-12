@@ -30,7 +30,7 @@ require.config({
 require([ 'QUnit', 'tests/client-test' ], function(QUnit, clienttest) {
 	// run the tests.
 	clienttest.crudEntity();
-
+	clienttest.relateEntities();
 	QUnit.load();
 	QUnit.start();
 });
