@@ -27,11 +27,13 @@ require.config({
 });
 
 // require the unit tests.
-require([ 'QUnit', 'tests/pingtest', 'tests/mgmttest' ], function(QUnit, pingtest,mgmttest) {
+require([ 'QUnit', 'tests/ping-test', 'tests/mgmt-test', 'tests/client-test' ], function(QUnit, pingtest,mgmttest, clienttest) {
 	// run the tests.
 	pingtest.run();
 	mgmttest.crudAccount();
 	mgmttest.crudApplication();
+	clienttest.crudEntity();
+	
 	QUnit.load();
 	QUnit.start();
 });
