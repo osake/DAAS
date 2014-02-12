@@ -10888,6 +10888,11 @@ define('daas/config',[],function() {
 	var baseUrl = "http://localhost:8080/daas-rest-server/";
 
 	return {
+		/**
+		 * Constants
+		 */
+		DATA_TYPE_JSON: "json",
+		DATA_TYPE_TEXT: "text",
 		CONTENT_TYPE_JSON: "application/json; charset=utf-8",
 		CONTENT_TYPE_FORM_ENCODED: "application/x-www-form-urlencoded; charset=UTF-8",
 		
@@ -10927,7 +10932,7 @@ define('daas/mgmt',[ "daas/http", "daas/config" ], function(http, config) {
 				url = _outhBaseUrl + "&client_id=" + userName
 						+ "&client_secret=" + password;
 			}
-			http.get(url, callback, "json");
+			http.get(url, callback, config.DATA_TYPE_JSON);
 		},
 
 		/**
@@ -10939,7 +10944,7 @@ define('daas/mgmt',[ "daas/http", "daas/config" ], function(http, config) {
 		 */
 		createAccount : function(accountName, callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName;
-			http.post(url, null, callback, "json", config.CONTENT_TYPE_JSON,
+			http.post(url, null, callback, config.DATA_TYPE_JSON, config.CONTENT_TYPE_JSON,
 					authToken);
 		},
 		/**
@@ -10952,7 +10957,7 @@ define('daas/mgmt',[ "daas/http", "daas/config" ], function(http, config) {
 		 */
 		getAccount : function(accountName, callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName;
-			http.get(url, callback, "json", authToken);
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Sends request to delete the account
@@ -10964,7 +10969,7 @@ define('daas/mgmt',[ "daas/http", "daas/config" ], function(http, config) {
 		 */
 		deleteAccount : function(accountName, callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName;
-			http.deleteRequest(url, callback, "json", authToken);
+			http.deleteRequest(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Creates an Account User
@@ -10977,7 +10982,7 @@ define('daas/mgmt',[ "daas/http", "daas/config" ], function(http, config) {
 		 */
 		createAccountUser : function(accountName, user, callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName + "/user";
-			http.post(url, user, callback, "json", config.CONTENT_TYPE_JSON,
+			http.post(url, user, callback, config.DATA_TYPE_JSON, config.CONTENT_TYPE_JSON,
 					authToken);
 		},
 		/**
@@ -10990,7 +10995,7 @@ define('daas/mgmt',[ "daas/http", "daas/config" ], function(http, config) {
 		 */
 		getAccountUsers : function(accountName, callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName + "/user";
-			http.get(url, callback, "json", authToken);
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Creates an Application
@@ -11006,7 +11011,7 @@ define('daas/mgmt',[ "daas/http", "daas/config" ], function(http, config) {
 				callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName
 					+ "/applications/" + applicationName;
-			http.post(url, application, callback, "json",
+			http.post(url, application, callback, config.DATA_TYPE_JSON,
 					config.CONTENT_TYPE_JSON, authToken);
 		},
 		/**
@@ -11023,7 +11028,7 @@ define('daas/mgmt',[ "daas/http", "daas/config" ], function(http, config) {
 				callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName
 					+ "/applications/" + applicationName + "/edit";
-			http.put(url, application, callback, "json",
+			http.put(url, application, callback, config.DATA_TYPE_JSON,
 					config.CONTENT_TYPE_JSON, authToken);
 		},
 		/**
@@ -11039,7 +11044,7 @@ define('daas/mgmt',[ "daas/http", "daas/config" ], function(http, config) {
 				authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName
 					+ "/applications/" + applicationName;
-			http.get(url, callback, "json", authToken);
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Deletes an application 
@@ -11054,7 +11059,7 @@ define('daas/mgmt',[ "daas/http", "daas/config" ], function(http, config) {
 				authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName
 					+ "/applications/" + applicationName;
-			http.deleteRequest(url, callback, "json", authToken);
+			http.deleteRequest(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Creates an Application User
@@ -11070,7 +11075,7 @@ define('daas/mgmt',[ "daas/http", "daas/config" ], function(http, config) {
 				callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName
 					+ "/applications/" + applicationName + "/user";
-			http.post(url, application, callback, "json",
+			http.post(url, application, callback, config.DATA_TYPE_JSON,
 					config.CONTENT_TYPE_JSON, authToken);
 		},
 	};
@@ -11082,18 +11087,234 @@ define('daas/ping',[ "daas/http","daas/config" ], function(http,config) {
 	return {
 		ping : function(callback) {
 			var url = config.getBaseUrl()+"ping";
-			http.get(url, callback, "text");
+			http.get(url, callback, config.DATA_TYPE_TEXT);
 		}
+	};
+});
+/**
+ * This module is to be used as the actual client toe create and manage
+ * entities. In general the URL structure followed for accessing this is /<accountName>/<applicationName>/<entityType>/<entityUuid>
+ * 
+ * where accountName is the name of the account created, applicationName is the
+ * name of the application created, and the entityType is the type (or
+ * collection) if entity created and entityUuid is the uuid of that entity
+ * 
+ * For e.g. If you have account TATA, and application MOTORS, and an entity CARS
+ * then the url to create a car would be:
+ * 
+ * POST : /TATA/MOTORS/CARS/
+ * 
+ * If you created a CAR with UUID INDICA, then you can get the car using the URL
+ * 
+ * GET: /TATA/MOTORS/CARS/INDICA
+ * 
+ * Note: For creating account and application, you should refer mgmt module
+ * 
+ * 
+ */
+define('daas/client',[ "daas/http", "daas/config" ], function(http, config) {
+
+	var _baseUrl = config.getBaseUrl();
+	return {
+
+		/**
+		 * API to create the entity
+		 * 
+		 * @param accountName
+		 * @param applicationName
+		 * @param entityType
+		 * @param entity
+		 * @param callback
+		 * @param authToken
+		 * @returns
+		 */
+		createEntity : function(accountName, applicationName, entityType,
+				entity, callback, authToken) {
+			var url = _baseUrl + accountName + "/" + applicationName + "/"
+					+ entityType;
+			http.post(url, entity, callback, config.DATA_TYPE_JSON, config.CONTENT_TYPE_JSON,
+					authToken);
+		},
+		/**
+		 * Returns an entity of an entity type by specifying the id
+		 * 
+		 * @param accountName
+		 * @param applicationName
+		 * @param entityType
+		 * @param entityUuid
+		 * @param callback
+		 * @param authToken
+		 * @returns
+		 */
+		getEntity : function(accountName, applicationName, entityType,
+				entityUuid, callback, authToken) {
+			var url = _baseUrl + accountName + "/" + applicationName + "/"
+					+ entityType + "/" + entityUuid;
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
+		},
+		/**
+		 * Returns a list of entities of the specific entityType
+		 * 
+		 * @param accountName
+		 * @param applicationName
+		 * @param entityType
+		 * @param callback
+		 * @param authToken
+		 * @returns
+		 */
+		getEntities : function(accountName, applicationName, entityType,
+				callback, authToken) {
+			var url = _baseUrl + accountName + "/" + applicationName + "/"
+					+ entityType;
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
+		},
+		/**
+		 * Updated a specific entity identified by the uuid
+		 * 
+		 * @param accountName
+		 * @param applicationName
+		 * @param entityType
+		 * @param entity
+		 * @param entityUuid
+		 * @param callback
+		 * @param authToken
+		 * @returns
+		 */
+		updateEntity : function(accountName, applicationName, entityType,
+				entity, entityUuid, callback, authToken) {
+			var url = _baseUrl + accountName + "/" + applicationName + "/"
+					+ entityType + "/" + entityUuid;
+			http.put(url, entity, callback, config.DATA_TYPE_JSON, config.CONTENT_TYPE_JSON,
+					authToken);
+		},
+		/**
+		 * Deletes a entity
+		 * 
+		 * @param accountName
+		 * @param applicationName
+		 * @param entityType
+		 * @param entityUuid
+		 * @param callback
+		 * @param authToken
+		 * @returns
+		 */
+		deleteEntity : function(accountName, applicationName, entityType,
+				entityUuid, callback, authToken) {
+			var url = _baseUrl + accountName + "/" + applicationName + "/"
+					+ entityType + "/" + entityUuid;
+			http.deleteRequest(url, callback, config.DATA_TYPE_JSON, authToken);
+		},
+		/**
+		 * Adds a relation between 2 entity objects. Url for a relation between
+		 * CARS and TYRES identified by the name RUNSON, we send a request to
+		 * the url
+		 * 
+		 * /TATA/MOTORS/CARS/INDICA/RUNSON/TYRES/MRF
+		 * 
+		 * where CARS and TYRES are two entity types created using the
+		 * #createEntity API and INDICA & MRF are the UUID's of the those
+		 * entities respectively
+		 * 
+		 * @param accountName
+		 * @param applicationName
+		 * @param entityType
+		 * @param entityUuid
+		 * @param relation
+		 * @param relatedEntityType
+		 * @param relatedEntityUuid
+		 * @param callback
+		 * @param authToken
+		 * @returns
+		 */
+		addRelation : function(accountName, applicationName, entityType,
+				entityUuid, relation, relatedEntityType, relatedEntityUuid,
+				callback, authToken) {
+			var url = _baseUrl + accountName + "/" + applicationName + "/"
+					+ entityType + "/" + entityUuid + "/" + relation + "/"
+					+ relatedEntityType + "/" + relatedEntityUuid;
+
+			http.post(url, null, callback, config.DATA_TYPE_JSON, config.CONTENT_TYPE_JSON,
+					authToken);
+		},
+		/**
+		 * Returns all the related objects B of the entity A identified by
+		 * entityId defined by the relation R. A->B by R then return B
+		 * 
+		 * @param accountName
+		 * @param applicationName
+		 * @param entityType
+		 * @param entityUuid
+		 * @param relation
+		 * @param relatedEntityType
+		 * @param callback
+		 * @param authToken
+		 * @returns
+		 */
+		getRelatedEntities : function(accountName, applicationName, entityType,
+				entityUuid, relation, relatedEntityType, callback, authToken) {
+			var url = _baseUrl + accountName + "/" + applicationName + "/"
+					+ entityType + "/" + entityUuid + "/" + relation + "/"
+					+ relatedEntityType;
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
+		},
+		/**
+		 * 
+		 * This is the reverse of getRelatedEntities
+		 * 
+		 * Returns the relating (connecting) objects A from the related Entity B defined by relation R.
+		 * A->B by R then return A for each B
+		 * 
+		 * @param accountName
+		 * @param applicationName
+		 * @param relatedEntityType
+		 * @param relatedEntityUuid
+		 * @param relation
+		 * @param callback
+		 * @param authToken
+		 * @returns
+		 */
+		getConnectingEntities : function(accountName, applicationName, relatedEntityType,
+				relatedEntityUuid, relation, callback, authToken) {
+			var url = _baseUrl + accountName + "/" + applicationName + "/"
+					+ relatedEntityType + "/" + relatedEntityUuid + "/connecting/" + relation;
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
+		},
+		
+		
+		/**
+		 * Deletes the relation between to entity objects 
+		 * 
+		 * @param accountName
+		 * @param applicationName
+		 * @param entityType
+		 * @param entityUuid
+		 * @param relation
+		 * @param relatedEntityType
+		 * @param relatedEntityUuid
+		 * @param callback
+		 * @param authToken
+		 * @returns
+		 */
+		deleteRelation : function(accountName, applicationName, entityType,
+				entityUuid, relation, relatedEntityType, relatedEntityUuid,
+				callback, authToken) {
+			var url = _baseUrl + accountName + "/" + applicationName + "/"
+					+ entityType + "/" + entityUuid + "/" + relation + "/"
+					+ relatedEntityType + "/" + relatedEntityUuid;
+			http.deleteRequest(url, callback, config.DATA_TYPE_TEXT, authToken);
+		},
+		
 	};
 });
 
 /**
  * Main daas module 
  */
-define('daas',['require','daas/core','daas/mgmt','daas/ping'],function(require) {
+define('daas',['require','daas/core','daas/mgmt','daas/ping','daas/client'],function(require) {
 	var daas = require('daas/core');
 	daas.mgmt = require('daas/mgmt');
 	daas.ping = require('daas/ping');
+	daas.client = require('daas/client');
 	return daas;
 });  var library = require('daas');
   if(typeof module !== 'undefined' && module.exports) {
