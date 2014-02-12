@@ -39,7 +39,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				entity, callback, authToken) {
 			var url = _baseUrl + accountName + "/" + applicationName + "/"
 					+ entityType;
-			http.post(url, entity, callback, "json", config.CONTENT_TYPE_JSON,
+			http.post(url, entity, callback, config.DATA_TYPE_JSON, config.CONTENT_TYPE_JSON,
 					authToken);
 		},
 		/**
@@ -57,7 +57,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				entityUuid, callback, authToken) {
 			var url = _baseUrl + accountName + "/" + applicationName + "/"
 					+ entityType + "/" + entityUuid;
-			http.get(url, callback, "json", authToken);
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Returns a list of entities of the specific entityType
@@ -73,7 +73,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				callback, authToken) {
 			var url = _baseUrl + accountName + "/" + applicationName + "/"
 					+ entityType;
-			http.get(url, callback, "json", authToken);
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Updated a specific entity identified by the uuid
@@ -91,7 +91,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				entity, entityUuid, callback, authToken) {
 			var url = _baseUrl + accountName + "/" + applicationName + "/"
 					+ entityType + "/" + entityUuid;
-			http.put(url, entity, callback, "json", config.CONTENT_TYPE_JSON,
+			http.put(url, entity, callback, config.DATA_TYPE_JSON, config.CONTENT_TYPE_JSON,
 					authToken);
 		},
 		/**
@@ -109,7 +109,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				entityUuid, callback, authToken) {
 			var url = _baseUrl + accountName + "/" + applicationName + "/"
 					+ entityType + "/" + entityUuid;
-			http.deleteRequest(url, callback, "json", authToken);
+			http.deleteRequest(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Adds a relation between 2 entity objects. Url for a relation between
@@ -140,7 +140,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 					+ entityType + "/" + entityUuid + "/" + relation + "/"
 					+ relatedEntityType + "/" + relatedEntityUuid;
 
-			http.post(url, null, callback, "json", config.CONTENT_TYPE_JSON,
+			http.post(url, null, callback, config.DATA_TYPE_JSON, config.CONTENT_TYPE_JSON,
 					authToken);
 		},
 		/**
@@ -162,7 +162,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 			var url = _baseUrl + accountName + "/" + applicationName + "/"
 					+ entityType + "/" + entityUuid + "/" + relation + "/"
 					+ relatedEntityType;
-			http.get(url, callback, "json", authToken);
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * 
@@ -184,7 +184,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				relatedEntityUuid, relation, callback, authToken) {
 			var url = _baseUrl + accountName + "/" + applicationName + "/"
 					+ relatedEntityType + "/" + relatedEntityUuid + "/connecting/" + relation;
-			http.get(url, callback, "json", authToken);
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		
 		
@@ -208,7 +208,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 			var url = _baseUrl + accountName + "/" + applicationName + "/"
 					+ entityType + "/" + entityUuid + "/" + relation + "/"
 					+ relatedEntityType + "/" + relatedEntityUuid;
-			http.deleteRequest(url, callback, "text", authToken);
+			http.deleteRequest(url, callback, config.DATA_TYPE_TEXT, authToken);
 		},
 		
 	};

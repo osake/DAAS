@@ -29,7 +29,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				url = _outhBaseUrl + "&client_id=" + userName
 						+ "&client_secret=" + password;
 			}
-			http.get(url, callback, "json");
+			http.get(url, callback, config.DATA_TYPE_JSON);
 		},
 
 		/**
@@ -41,7 +41,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 		 */
 		createAccount : function(accountName, callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName;
-			http.post(url, null, callback, "json", config.CONTENT_TYPE_JSON,
+			http.post(url, null, callback, config.DATA_TYPE_JSON, config.CONTENT_TYPE_JSON,
 					authToken);
 		},
 		/**
@@ -54,7 +54,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 		 */
 		getAccount : function(accountName, callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName;
-			http.get(url, callback, "json", authToken);
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Sends request to delete the account
@@ -66,7 +66,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 		 */
 		deleteAccount : function(accountName, callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName;
-			http.deleteRequest(url, callback, "json", authToken);
+			http.deleteRequest(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Creates an Account User
@@ -79,7 +79,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 		 */
 		createAccountUser : function(accountName, user, callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName + "/user";
-			http.post(url, user, callback, "json", config.CONTENT_TYPE_JSON,
+			http.post(url, user, callback, config.DATA_TYPE_JSON, config.CONTENT_TYPE_JSON,
 					authToken);
 		},
 		/**
@@ -92,7 +92,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 		 */
 		getAccountUsers : function(accountName, callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName + "/user";
-			http.get(url, callback, "json", authToken);
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Creates an Application
@@ -108,7 +108,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName
 					+ "/applications/" + applicationName;
-			http.post(url, application, callback, "json",
+			http.post(url, application, callback, config.DATA_TYPE_JSON,
 					config.CONTENT_TYPE_JSON, authToken);
 		},
 		/**
@@ -125,7 +125,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName
 					+ "/applications/" + applicationName + "/edit";
-			http.put(url, application, callback, "json",
+			http.put(url, application, callback, config.DATA_TYPE_JSON,
 					config.CONTENT_TYPE_JSON, authToken);
 		},
 		/**
@@ -141,7 +141,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName
 					+ "/applications/" + applicationName;
-			http.get(url, callback, "json", authToken);
+			http.get(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Deletes an application 
@@ -156,7 +156,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName
 					+ "/applications/" + applicationName;
-			http.deleteRequest(url, callback, "json", authToken);
+			http.deleteRequest(url, callback, config.DATA_TYPE_JSON, authToken);
 		},
 		/**
 		 * Creates an Application User
@@ -172,7 +172,7 @@ define([ "daas/http", "daas/config" ], function(http, config) {
 				callback, authToken) {
 			var url = _mgmtBaseUrl + "accounts/" + accountName
 					+ "/applications/" + applicationName + "/user";
-			http.post(url, application, callback, "json",
+			http.post(url, application, callback, config.DATA_TYPE_JSON,
 					config.CONTENT_TYPE_JSON, authToken);
 		},
 	};

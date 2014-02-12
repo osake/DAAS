@@ -5,7 +5,7 @@ define([ "daas/http","daas/config" ], function(http,config) {
 	return {
 		ping : function(callback) {
 			var url = config.getBaseUrl()+"ping";
-			http.get(url, callback, "text");
+			http.get(url, callback, config.DATA_TYPE_TEXT);
 		}
 	};
 });
