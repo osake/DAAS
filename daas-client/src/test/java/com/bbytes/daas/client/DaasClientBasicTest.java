@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.bbytes.daas.domain.Account;
+import com.google.gson.Gson;
 
 /**
  * 
@@ -50,6 +51,17 @@ public class DaasClientBasicTest extends DaasClientBaseTest {
 		DaasManagementClient daasManagementClient = new DaasManagementClient(host, port);
 		boolean success = daasManagementClient.login("admin", "password");
 		Assert.assertTrue(success);
+	}
+	
+	@Test
+	public void oauthJsonTest() {
+		Gson gson = new Gson();
+		String jsonOFOauth="{\"value\":\"69f57ea9-dd69-4254-a973-9c40134fb1ff\",\"expiration\":1392370984066,\"tokenType\":\"bearer\",\"refreshToken\":null,\"scope\":[\"read\",\"trust\",\"write\"],\"additionalInformation\":{},\"expiresIn\":2868,\"expired\":false}";
+		System.out.println(jsonOFOauth);
+		OAuthToken token = gson.fromJson(jsonOFOauth, OAuthToken.class);
+		token.getAdditionalInformation().put("isSuperAdmin", false);
+		System.out.println(gson.toJson(token));
+		Assert.assertNotNull(token.getAdditionalInformation().get(0));
 	}
 	
 	@Test(expected=DaasClientException.class)

@@ -15,7 +15,9 @@ package com.bbytes.daas.client;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The oauth token object representation of the json sent from server during authorization
@@ -37,6 +39,8 @@ public class OAuthToken {
 	private Integer expiresIn;
 
 	private Boolean expired;
+
+	private Map<String, Object> additionalInformation = new HashMap<String, Object>();
 
 	public String getValue() {
 		return value;
@@ -68,6 +72,21 @@ public class OAuthToken {
 
 	public void setScope(List<String> scope) {
 		this.scope = scope;
+	}
+
+	/**
+	 * @return the additionalInformation
+	 */
+	public Map<String, Object> getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	/**
+	 * @param additionalInformation
+	 *            the additionalInformation to set
+	 */
+	public void setAdditionalInformation(Map<String, Object> additionalInformation) {
+		this.additionalInformation = additionalInformation;
 	}
 
 	public Integer getExpiresIn() {

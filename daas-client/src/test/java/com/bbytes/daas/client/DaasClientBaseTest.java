@@ -53,6 +53,7 @@ public class DaasClientBaseTest {
 		
 		return null;
 	}
+	
 
 	protected DaasManagementClient getDaasMgmtClient() throws DaasClientException {
 		DaasManagementClient daasManagementClient = new DaasManagementClient(host, port);
