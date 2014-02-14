@@ -145,5 +145,11 @@ public class OrientDbTemplate {
 	public void createDatabase(String dbName, String dbType) {
 		connectionManager.createDatabase(dbName, dbType);
 	}
-
+	/**
+	 * Clears the Thread Local DB
+	 */
+	public static void clearThreadLocalDB(){
+		THREAD_LOCAL_DB_INSTANCE.set(null);
+		THREAD_LOCAL_OBJECT_DB_INSTANCE.set(null);
+	}
 }

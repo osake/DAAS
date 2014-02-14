@@ -39,6 +39,6 @@ public class TenantRouter {
 	 */
 	public static void clearContext() {
 		tenantDBNameHolder.remove();
-		OrientDbTemplate.THREAD_LOCAL_DB_INSTANCE.remove();
+		OrientDbTemplate.clearThreadLocalDB();
 	}
 }
