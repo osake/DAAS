@@ -101,7 +101,7 @@ public class ManagementController {
 	 */
 	@RequestMapping(value = "/accounts/{accountName}/{active}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	boolean getAccount(@PathVariable("accountName") String accountName,@PathVariable("active") String active) throws DaasPersistentException, DaasEntityNotFoundException {
+	boolean activateOrDeactivateAccount(@PathVariable("accountName") String accountName,@PathVariable("active") String active) throws DaasPersistentException, DaasEntityNotFoundException {
 		Account account=  managementService.getAccount(accountName);
 		account.setActive(Boolean.parseBoolean(active));
 		return true;

@@ -13,38 +13,49 @@
  */
 package com.bbytes.daas.client;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.gson.Gson;
 
 /**
+ * Unit test to check for spring based daas client
  * 
- * 
- * @author Thanneer
+ * @author Dhanush Gopinath
  * 
  * @version
  */
-public class DaasClientBasicTest extends DaasClientBaseTest {
-	
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:/META-INF/app-context.xml")
+public class DaasClientSpringBasicTest extends DaasClientBaseTest{
 
-	
+	@Autowired
+	private DaasClient daasClient;
+
+	@Autowired
+	private DaasManagementClient daasManagementClient;
 	@Before
 	public void SetUp() throws DaasClientException {
 	}
 
 	@Test
 	public void daasClientTest() throws DaasClientException  {
-		DaasClient daasClient = new DaasClient(host, port);
 		boolean success = daasClient.login("testAccn","testApp","admin", "password");
+		assertTrue(success);
 	}
 	
 	
 	@Test
 	public void daasMgmtClientTest() throws DaasClientException  {
-		DaasManagementClient daasManagementClient = new DaasManagementClient(host, port);
 		boolean success = daasManagementClient.login("admin", "password");
 		Assert.assertTrue(success);
 	}
@@ -57,13 +68,12 @@ public class DaasClientBasicTest extends DaasClientBaseTest {
 		OAuthToken token = gson.fromJson(jsonOFOauth, OAuthToken.class);
 		token.getAdditionalInformation().put("isSuperAdmin", false);
 		System.out.println(gson.toJson(token));
-		Assert.assertNotNull(token.getAdditionalInformation().get(0));
+		assertFalse((Boolean)token.getAdditionalInformation().get("isSuperAdmin"));
 	}
 	
 	@Test(expected=DaasClientException.class)
 	public void daasMgmtClientIncorrectCredentialsTest() throws DaasClientException  {
-		DaasManagementClient daasManagementClient = new DaasManagementClient(host, port);
-		boolean success = daasManagementClient.login("dfdfdf", "fgfgfgfg");
+		daasManagementClient.login("dfdfdf", "fgfgfgfg");
 	}
 	
 
@@ -71,4 +81,5 @@ public class DaasClientBasicTest extends DaasClientBaseTest {
 	public void cleanUp() {
 		asyncHttpClient.close();
 	}
+	
 }

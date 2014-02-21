@@ -33,6 +33,13 @@ import com.ning.http.client.Response;
  */
 public class DaasManagementClient extends DaasClient {
 
+	/**
+	 * Default constructor or Spring init
+	 */
+	public DaasManagementClient() {
+		super();
+	}
+	
 	public DaasManagementClient(String host, String port) {
 		super(host, port);
 	}
@@ -69,6 +76,27 @@ public class DaasManagementClient extends DaasClient {
 		}
 	}
 
+	/**
+	 * @param accountName
+	 * @return
+	 * @throws DaasClientException 
+	 */
+	public boolean activateOrDeactivateAccount(String accountName, boolean activate) throws DaasClientException {
+		try {
+			accountName = URLEncoder.encode(accountName, "UTF-8");
+			String url = baseURL + URLConstants.MANAGEMENT_CONTEXT
+					+ String.format(URLConstants.CREATE_DELETE_ACCOUNT, accountName) + "/" + activate;
+			Future<Response> f = buildRequest("put", url).execute();
+			Response r = f.get();
+			if (!HttpStatusUtil.isSuccess(r))
+				throw new DaasClientException("Account creation failed : " + r.getResponseBody());
+			return true;
+
+		} catch (Exception e) {
+			throw new DaasClientException(e);
+		}
+	}
+	
 	public boolean deleteAccount(String accName) throws DaasClientException {
 		try {
 			accName = URLEncoder.encode(accName, "UTF-8");

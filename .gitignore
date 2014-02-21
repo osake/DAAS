@@ -7,3 +7,6 @@
 /.settings/
 /*.project
 /daasjs/*.project
+/daas-clientjs/.project
+/daas-rest-server/src/main/webapp/META-INF/MANIFEST.MF
+/release.properties

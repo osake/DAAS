@@ -22,6 +22,8 @@ public class Account extends Entity {
 		type = Account.class.getSimpleName();
 	}
 
+	//default is true as the already created accounts have to be active
+	private boolean active=true;
 	/**
 	 * Overloaded constructor
 	 * 
@@ -35,6 +37,21 @@ public class Account extends Entity {
 		this.name = name;
 	}
 
+	
+	/**
+	 * @return the active
+	 */
+	public boolean isActive() {
+		return active;
+	}
+
+	/**
+	 * @param active the active to set
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+	
 	/**
 	 * @return the name
 	 */

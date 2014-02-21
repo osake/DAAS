@@ -13,6 +13,8 @@
  */
 package com.bbytes.daas.client;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -56,6 +58,8 @@ public class DaasClientAccountApplicationsTest extends DaasClientBaseTest {
 		int newsize = accounts.size();
 		Assert.assertTrue(size + 1 == newsize);
 
+		assertTrue(daasManagementClient.activateOrDeactivateAccount(accnName, true));
+		
 		Application application = new Application();
 		application.setAccountName(accnName);
 		application.setName(appName);

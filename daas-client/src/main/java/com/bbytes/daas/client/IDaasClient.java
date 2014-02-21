@@ -76,7 +76,7 @@ public interface IDaasClient {
 	 * @throws DaasClientException
 	 */
 	public <T extends Entity> T createEntity(T entity) throws DaasClientException;
-
+	
 	/**
 	 * Create the entity in Daas Db. The UUID will be auto assigned as it is a new entity.
 	 * 

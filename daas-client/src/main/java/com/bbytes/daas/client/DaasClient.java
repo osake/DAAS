@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.springframework.beans.factory.InitializingBean;
+
 import com.bbytes.daas.client.annotation.Relation;
 import com.bbytes.daas.client.annotation.RelationAnnotationExclStrat;
 import com.bbytes.daas.client.annotation.RelationAnnotationProcessor;
@@ -54,7 +56,8 @@ import com.ning.http.client.Response;
  * 
  * @version 0.0.1
  */
-public class DaasClient implements IDaasClient {
+
+public class DaasClient implements IDaasClient, InitializingBean {
 
 	protected String clientId;
 
@@ -80,6 +83,16 @@ public class DaasClient implements IDaasClient {
 	
 	protected ExecutorService executor ;
 
+	public DaasClient() {
+		
+	}
+	
+	/**
+	 * For the Non Spring Users
+	 * 
+	 * @param host
+	 * @param port
+	 */
 	public DaasClient(String host, String port) {
 
 		this.host = host;
@@ -98,6 +111,35 @@ public class DaasClient implements IDaasClient {
 		
 		executor = Executors.newCachedThreadPool();
 
+	}
+	
+	
+	/**
+	 * @return the host
+	 */
+	public String getHost() {
+		return host;
+	}
+
+	/**
+	 * @param host the host to set
+	 */
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	/**
+	 * @return the port
+	 */
+	public String getPort() {
+		return port;
+	}
+
+	/**
+	 * @param port the port to set
+	 */
+	public void setPort(String port) {
+		this.port = port;
 	}
 
 	/**
@@ -1940,6 +1982,18 @@ public class DaasClient implements IDaasClient {
 	public void close() {
 		if (asyncHttpClient != null && !asyncHttpClient.isClosed())
 			asyncHttpClient.close();
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		baseURL = "http://" + host + ":" + port + URLConstants.SERVER_CONTEXT;
+		Builder builder = new AsyncHttpClientConfig.Builder();
+		builder.setCompressionEnabled(true).setAllowPoolingConnection(true).setConnectionTimeoutInMs(30000).build();
+		asyncHttpClient = new AsyncHttpClient(builder.build());
+		gson = new GsonBuilder().registerTypeAdapter(Date.class, SerializerUtil.getSerializerForDate())
+				.registerTypeAdapter(Date.class, SerializerUtil.getDeSerializerForDate())
+				.setExclusionStrategies(new RelationAnnotationExclStrat()).create();
+		executor = Executors.newCachedThreadPool();
 	}
 
 }
