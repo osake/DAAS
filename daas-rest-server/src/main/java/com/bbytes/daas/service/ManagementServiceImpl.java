@@ -55,8 +55,10 @@ public class ManagementServiceImpl implements ManagementService {
 			return new ArrayList<Account>();
 		}
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.bbytes.daas.service.ManagementService#getAccountCount()
 	 */
 	@Override
@@ -73,6 +75,7 @@ public class ManagementServiceImpl implements ManagementService {
 	public Account createAccount(String accountName) throws DaasPersistentException {
 		Account account = new Account();
 		account.setName(accountName);
+		account.setActive(false); // by default an account is inactive when created
 		return accountDao.save(account);
 	}
 
@@ -83,7 +86,8 @@ public class ManagementServiceImpl implements ManagementService {
 	 * java.lang.String)
 	 */
 	@Override
-	public Application createApplication(String accountName, String applicationName, String applicationType, String applicationSubType, String applicationFullName) throws DaasPersistentException {
+	public Application createApplication(String accountName, String applicationName, String applicationType,
+			String applicationSubType, String applicationFullName) throws DaasPersistentException {
 		Application app = new Application();
 		app.setAccountName(accountName);
 		app.setName(applicationName);
@@ -93,7 +97,6 @@ public class ManagementServiceImpl implements ManagementService {
 		return applicationDao.save(app);
 	}
 
-	
 	@Override
 	public Application editApplication(String accountName, String applicationName, String applicationType,
 			String applicationSubType, String applicationFullName) throws DaasPersistentException {
@@ -114,8 +117,6 @@ public class ManagementServiceImpl implements ManagementService {
 		return null;
 	}
 
-	
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -146,7 +147,6 @@ public class ManagementServiceImpl implements ManagementService {
 			accountDao.remove(accn);
 		}
 
-		
 		return true;
 
 	}
@@ -202,7 +202,5 @@ public class ManagementServiceImpl implements ManagementService {
 		}
 		return null;
 	}
-
-
 
 }

@@ -17,6 +17,9 @@ public class Account extends Entity {
 	 */
 	private static final long serialVersionUID = -5673848472822451100L;
 	
+	//default is true as the already created accounts have to be active
+	private boolean active=true;
+	
 	public Account() {
 		super();
 		type = Account.class.getSimpleName();
@@ -48,5 +51,19 @@ public class Account extends Entity {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * @return the active
+	 */
+	public boolean isActive() {
+		return active;
+	}
+
+	/**
+	 * @param active the active to set
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }

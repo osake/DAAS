@@ -90,6 +90,24 @@ public class ManagementController {
 	}
 	
 	/**
+	 * Update account status to active or inactive 
+	 * 
+	 * @param accountName
+	 * @param active can be true or TRUE , false or FALSE
+	 * @return
+	 * @throws DaasException
+	 * @throws DaasPersistentException
+	 * @throws DaasEntityNotFoundException 
+	 */
+	@RequestMapping(value = "/accounts/{accountName}/{active}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	boolean getAccount(@PathVariable("accountName") String accountName,@PathVariable("active") String active) throws DaasPersistentException, DaasEntityNotFoundException {
+		Account account=  managementService.getAccount(accountName);
+		account.setActive(Boolean.parseBoolean(active));
+		return true;
+	}
+	
+	/**
 	 * Delete account
 	 * 
 	 * @param accountName
