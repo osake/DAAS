@@ -19,9 +19,9 @@ import java.util.concurrent.Future;
 
 import org.springframework.beans.factory.InitializingBean;
 
-import com.bbytes.daas.client.annotation.Relation;
-import com.bbytes.daas.client.annotation.RelationAnnotationExclStrat;
-import com.bbytes.daas.client.annotation.RelationAnnotationProcessor;
+import com.bbytes.daas.annotation.Relation;
+import com.bbytes.daas.annotation.RelationAnnotationExclStrat;
+import com.bbytes.daas.annotation.RelationAnnotationProcessor;
 import com.bbytes.daas.domain.Entity;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

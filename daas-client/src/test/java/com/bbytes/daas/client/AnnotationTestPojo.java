@@ -15,8 +15,8 @@ package com.bbytes.daas.client;
 
 import java.util.Date;
 
-import com.bbytes.daas.client.annotation.CascadeType;
-import com.bbytes.daas.client.annotation.Relation;
+import com.bbytes.daas.annotation.CascadeType;
+import com.bbytes.daas.annotation.Relation;
 import com.bbytes.daas.domain.Entity;
 
 /**

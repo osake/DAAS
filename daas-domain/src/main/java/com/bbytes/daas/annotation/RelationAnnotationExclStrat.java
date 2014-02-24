@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License.
  */
-package com.bbytes.daas.client.annotation;
+package com.bbytes.daas.annotation;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;

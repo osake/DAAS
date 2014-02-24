@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.bbytes.daas.client.annotation;
+package com.bbytes.daas.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
