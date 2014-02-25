@@ -297,6 +297,9 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	public <T extends Entity> List<T> getEntitiesByProperty(String entityTypeName, Class<T> entityClassType,
 			Map<String, String> propertyMap) throws DaasClientException {
 		try {
+			if(propertyMap == null || propertyMap.isEmpty()) {
+				return null;
+			}
 			String url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityTypeName;
 
 			// create parameter map from propertyMap
