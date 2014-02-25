@@ -103,7 +103,7 @@ public class DaasTenantMgmtClient extends DaasAccountMgmtClient implements IDaas
 			Future<Response> f = buildRequest("put", url).execute();
 			Response r = f.get();
 			if (!HttpStatusUtil.isSuccess(r))
-				throw new DaasClientException("Account creation failed : " + r.getResponseBody());
+				throw new DaasClientException("Account activation failed : " + r.getResponseBody());
 			return true;
 
 		} catch (Exception e) {
