@@ -16,6 +16,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.object.ODatabaseObject;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
@@ -37,6 +38,7 @@ public class OrientDbTemplate {
 
 	/**
 	 * Get the default db i.e graph db
+	 * 
 	 * @return
 	 */
 	public OrientGraph getDatabase() {
@@ -53,7 +55,8 @@ public class OrientDbTemplate {
 	}
 
 	/**
-	 * Get object db 
+	 * Get object db
+	 * 
 	 * @return
 	 */
 	public ODatabaseRecord getDocumentDatabase() {
@@ -62,6 +65,7 @@ public class OrientDbTemplate {
 
 	/**
 	 * Get the main tenant mgmt db
+	 * 
 	 * @return
 	 */
 	public ODatabaseObject getTenantManagementDatabase() {
@@ -107,17 +111,22 @@ public class OrientDbTemplate {
 	}
 
 	/**
-	 * drop the db 
+	 * drop the db
+	 * 
 	 * @param databaseName
 	 * @return
 	 */
 	public boolean dropDatabase(String databaseName) {
-		return connectionManager.dropDatabase(databaseName);
+		boolean success = connectionManager.dropDatabase(databaseName);
+		if (success && TenantRouter.getTenantIdentifier().equals(databaseName)) {
+			clearThreadLocalDB();
+		}
+		return success;
 	}
 
-	
 	/**
 	 * Get the object db
+	 * 
 	 * @return
 	 */
 	public ODatabaseObject getObjectDatabase() {
@@ -140,15 +149,16 @@ public class OrientDbTemplate {
 	 *            the db name
 	 * @param dbType
 	 *            value can be 'graph' or 'object'
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void createDatabase(String dbName, String dbType) {
 		connectionManager.createDatabase(dbName, dbType);
 	}
+
 	/**
 	 * Clears the Thread Local DB
 	 */
-	public static void clearThreadLocalDB(){
+	public static void clearThreadLocalDB() {
 		THREAD_LOCAL_DB_INSTANCE.set(null);
 		THREAD_LOCAL_OBJECT_DB_INSTANCE.set(null);
 	}
