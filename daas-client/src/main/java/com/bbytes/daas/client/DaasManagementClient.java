@@ -113,7 +113,7 @@ public class DaasManagementClient extends DaasClient {
 			throw new DaasClientException(e);
 		}
 	}
-
+	
 	public List<Account> getAccounts() throws DaasClientException {
 		String url = baseURL + URLConstants.MANAGEMENT_CONTEXT + URLConstants.GET_ALL_ACCOUNT;
 		try {
@@ -123,6 +123,24 @@ public class DaasManagementClient extends DaasClient {
 				throw new DaasClientException("Could not fetch all accounts : " + r.getResponseBody());
 
 			List<Account> accounts = gson.fromJson(r.getResponseBody(), new TypeToken<List<Account>>() {
+			}.getType());
+			return accounts;
+
+		} catch (Exception e) {
+			throw new DaasClientException(e);
+		}
+	}
+	
+	
+	public Account getAccount(String accountName) throws DaasClientException {
+		String url = baseURL + URLConstants.MANAGEMENT_CONTEXT + String.format(URLConstants.GET_ACCOUNT, accountName);
+		try {
+			Future<Response> f = buildRequest("get", url).execute();
+			Response r = f.get();
+			if (!HttpStatusUtil.isSuccess(r))
+				throw new DaasClientException("Could not fetch all accounts : " + r.getResponseBody());
+
+			Account accounts = gson.fromJson(r.getResponseBody(), new TypeToken<Account>() {
 			}.getType());
 			return accounts;
 

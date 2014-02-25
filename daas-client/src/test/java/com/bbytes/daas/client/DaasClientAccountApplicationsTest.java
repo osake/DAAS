@@ -13,6 +13,7 @@
  */
 package com.bbytes.daas.client;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -53,7 +54,9 @@ public class DaasClientAccountApplicationsTest extends DaasClientBaseTest {
 		Assert.assertTrue(size > 0);
 
 		daasManagementClient.createAccount(accnName);
-
+		
+		assertNotNull(daasManagementClient.getAccount(accnName));
+		
 		accounts = daasManagementClient.getAccounts();
 		int newsize = accounts.size();
 		Assert.assertTrue(size + 1 == newsize);
