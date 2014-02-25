@@ -1669,7 +1669,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 				f = buildRequest("post", url).setBody(gson.toJson(entity))
 						.setHeader("Content-Type", "application/json").execute();
 			} else {
-				url = baseURL + "/" + accountName + "/" + applicationName + "/" + entity.getClass().getSimpleName()
+				url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityType
 						+ "/" + entity.getUuid();
 				f = buildRequest("put", url).setBody(gson.toJson(entity)).setHeader("Content-Type", "application/json")
 						.execute();
