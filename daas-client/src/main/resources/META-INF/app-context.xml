@@ -28,9 +28,11 @@
 		<property name="host" value="${daas.host}"></property>
 		<property name="port" value="${daas.port}"></property>
 	</bean>
-	
-	<bean id="daasMgmtClient" class="com.bbytes.daas.client.DaasManagementClient"
-		parent="daasClient"/>
 
+	<bean id="daasAccClient" class="com.bbytes.daas.client.DaasAccountMgmtClient"
+		parent="daasClient" />
+		
+	<bean id="daasMgmtClient" class="com.bbytes.daas.client.DaasTenantMgmtClient"
+		parent="daasAccClient" />
 
 </beans>

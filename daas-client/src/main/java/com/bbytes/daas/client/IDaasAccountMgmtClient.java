@@ -89,5 +89,13 @@ public interface IDaasAccountMgmtClient extends IDaasClient{
 	 * @throws DaasClientException
 	 */
 	public DaasUser createApplicationUser(String accName, String appName, DaasUser user) throws DaasClientException;
+	
+	/**
+	 * @param accName
+	 * @param appName
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public DaasUser getApplicationUser(String accName, String appName) throws DaasClientException;
 
 }
