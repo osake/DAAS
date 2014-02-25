@@ -86,7 +86,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 
 	protected String accountName;
 
-	protected DaasManagementClient daasManagementClient;
+	protected IDaasTenantMgmtClient daasManagementClient;
 
 	protected ExecutorService executor;
 
@@ -102,6 +102,9 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	 */
 	public DaasClient(String host, String port) {
 
+		DaasClientUtil.validateArg(host, "Host value cannot be null or empty");
+		DaasClientUtil.validateArg(port, "Port value cannot be null or empty");
+		
 		this.host = host;
 		this.port = port;
 
@@ -196,6 +199,12 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	 */
 	public boolean login(String accountName, String applicationName, String clientId, String clientSecret)
 			throws DaasClientException {
+		
+		DaasClientUtil.validateArg(accountName, "Account name cannot be null or empty");
+		DaasClientUtil.validateArg(clientId, "clientId  cannot be null or empty");
+		DaasClientUtil.validateArg(clientSecret, "clientSecret cannot be null or empty");
+		
+		
 		this.accountName = accountName;
 		this.applicationName = applicationName;
 

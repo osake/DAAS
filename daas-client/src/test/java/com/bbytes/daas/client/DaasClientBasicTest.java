@@ -44,7 +44,7 @@ public class DaasClientBasicTest extends DaasClientBaseTest {
 	
 	@Test
 	public void daasMgmtClientTest() throws DaasClientException  {
-		DaasManagementClient daasManagementClient = new DaasManagementClient(host, port);
+		IDaasTenantMgmtClient daasManagementClient = new DaasTenantMgmtClient(host, port);
 		boolean success = daasManagementClient.login("admin", "password");
 		Assert.assertTrue(success);
 	}
@@ -62,7 +62,7 @@ public class DaasClientBasicTest extends DaasClientBaseTest {
 	
 	@Test(expected=DaasClientException.class)
 	public void daasMgmtClientIncorrectCredentialsTest() throws DaasClientException  {
-		DaasManagementClient daasManagementClient = new DaasManagementClient(host, port);
+		IDaasTenantMgmtClient daasManagementClient = new DaasTenantMgmtClient(host, port);
 		boolean success = daasManagementClient.login("dfdfdf", "fgfgfgfg");
 	}
 	

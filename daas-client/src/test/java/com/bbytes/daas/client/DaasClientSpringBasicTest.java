@@ -42,7 +42,7 @@ public class DaasClientSpringBasicTest extends DaasClientBaseTest{
 	private DaasClient daasClient;
 
 	@Autowired
-	private DaasManagementClient daasManagementClient;
+	private IDaasTenantMgmtClient daasManagementClient;
 	@Before
 	public void SetUp() throws DaasClientException {
 	}

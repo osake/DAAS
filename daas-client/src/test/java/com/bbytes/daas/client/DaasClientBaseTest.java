@@ -55,8 +55,8 @@ public class DaasClientBaseTest {
 	}
 	
 
-	protected DaasManagementClient getDaasMgmtClient() throws DaasClientException {
-		DaasManagementClient daasManagementClient = new DaasManagementClient(host, port);
+	protected IDaasTenantMgmtClient getDaasMgmtClient() throws DaasClientException {
+		IDaasTenantMgmtClient daasManagementClient = new DaasTenantMgmtClient(host, port);
 		boolean success = daasManagementClient.login("admin", "admin");
 		if(success)
 			return daasManagementClient;

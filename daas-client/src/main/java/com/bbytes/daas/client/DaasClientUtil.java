@@ -23,7 +23,7 @@ import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
 import com.ning.http.client.Response;
 
 /**
- *  Client utils class
+ * Client utils class
  * 
  * @author Thanneer
  * 
@@ -78,10 +78,9 @@ public class DaasClientUtil {
 			}
 
 			Response r = f.get();
-			if (!HttpStatusUtil.isSuccess(r)){
+			if (!HttpStatusUtil.isSuccess(r)) {
 				throw new DaasClientException("Not able to login to daas server on " + baseURL);
 			}
-				
 
 			token = gson.fromJson(r.getResponseBody(), OAuthToken.class);
 
@@ -91,7 +90,7 @@ public class DaasClientUtil {
 		} catch (InterruptedException | ExecutionException | IOException e) {
 			throw new DaasClientException(e);
 		}
-		
+
 		return token;
 
 	}
@@ -110,6 +109,22 @@ public class DaasClientUtil {
 				throw new DaasClientException("Daas server error : " + r.getResponseBody());
 		}
 
+	}
+
+	public static void validateArg(Object object, String message) {
+		if (object instanceof String) {
+			validateStringArg((String) object, message);
+		} else {
+			if (object == null) {
+				throw new IllegalArgumentException(message);
+			}
+		}
+	}
+
+	private static void validateStringArg(String string, String message) {
+		if (string == null || string.isEmpty()) {
+			throw new IllegalArgumentException(message);
+		}
 	}
 
 }

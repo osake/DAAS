@@ -45,7 +45,7 @@ public class DaasClientRepeatAccountCreationTest extends DaasClientBaseTest {
 	@Test
 	public void daasMgmtClientRepeatAccountCreationTest() throws DaasClientException {
 
-		DaasManagementClient daasManagementClient = new DaasManagementClient(host, port);
+		IDaasTenantMgmtClient daasManagementClient = new DaasTenantMgmtClient(host, port);
 		boolean success = daasManagementClient.login("admin", "password");
 
 		Account account = daasManagementClient.createAccount(accnName);
@@ -93,7 +93,7 @@ public class DaasClientRepeatAccountCreationTest extends DaasClientBaseTest {
 
 	@Test
 	public void daasMgmtClientAccountDelTest() throws DaasClientException {
-		DaasManagementClient daasManagementClient = new DaasManagementClient(host, port);
+		IDaasTenantMgmtClient daasManagementClient = new DaasTenantMgmtClient(host, port);
 		boolean success = daasManagementClient.login("admin", "password");
 
 		List<Account> accounts = daasManagementClient.getAccounts();

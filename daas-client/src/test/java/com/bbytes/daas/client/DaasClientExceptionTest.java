@@ -37,7 +37,7 @@ public class DaasClientExceptionTest extends DaasClientBaseTest {
 	@Before
 	public void SetUp() throws DaasClientException {
 		try {
-			DaasManagementClient daasManagementClient = new DaasManagementClient(host, port);
+			IDaasTenantMgmtClient daasManagementClient = new DaasTenantMgmtClient(host, port);
 			boolean state = daasManagementClient.login("admin", "password");
 
 			try {
