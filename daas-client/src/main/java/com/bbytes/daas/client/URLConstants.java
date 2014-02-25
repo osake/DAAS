@@ -42,7 +42,11 @@ public class URLConstants {
 	
 	public static final String GET_ALL_APPLICATIONS="/accounts/%s/applications";
 	
+	public static final String GET_APPLICATIONS="/accounts/%s/applications/%s";
+	
 	public static final String CREATE_ACCOUNT_USER="/accounts/%s/user";
+	
+	public static final String CREATE_APPLICATION_USER="/accounts/%s/applications/%s/user";
 	
 	
 }

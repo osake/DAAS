@@ -39,11 +39,19 @@ public class DaasManagementClient extends DaasClient {
 	public DaasManagementClient() {
 		super();
 	}
-	
+
 	public DaasManagementClient(String host, String port) {
 		super(host, port);
 	}
 
+	/**
+	 * Logs in to the DAAS Server
+	 * 
+	 * @param clientId
+	 * @param clientSecret
+	 * @return
+	 * @throws DaasClientException
+	 */
 	public boolean login(String clientId, String clientSecret) throws DaasClientException {
 		// first verify if port and host name is correct using the ping url
 		if (!pingSuccess())
@@ -57,6 +65,13 @@ public class DaasManagementClient extends DaasClient {
 		return true;
 	}
 
+	/**
+	 * Creates an account with the account name passed and returns it
+	 * 
+	 * @param accName
+	 * @return
+	 * @throws DaasClientException
+	 */
 	public Account createAccount(String accName) throws DaasClientException {
 
 		try {
@@ -77,9 +92,11 @@ public class DaasManagementClient extends DaasClient {
 	}
 
 	/**
+	 * Activates or deactivates an account based on the boolean value passed
+	 * 
 	 * @param accountName
 	 * @return
-	 * @throws DaasClientException 
+	 * @throws DaasClientException
 	 */
 	public boolean activateOrDeactivateAccount(String accountName, boolean activate) throws DaasClientException {
 		try {
@@ -96,7 +113,14 @@ public class DaasManagementClient extends DaasClient {
 			throw new DaasClientException(e);
 		}
 	}
-	
+
+	/**
+	 * Deletes an account. Returns true if successfull
+	 * 
+	 * @param accName
+	 * @return
+	 * @throws DaasClientException
+	 */
 	public boolean deleteAccount(String accName) throws DaasClientException {
 		try {
 			accName = URLEncoder.encode(accName, "UTF-8");
@@ -113,7 +137,13 @@ public class DaasManagementClient extends DaasClient {
 			throw new DaasClientException(e);
 		}
 	}
-	
+
+	/**
+	 * Returns all the accounts in the Daas Server
+	 * 
+	 * @return
+	 * @throws DaasClientException
+	 */
 	public List<Account> getAccounts() throws DaasClientException {
 		String url = baseURL + URLConstants.MANAGEMENT_CONTEXT + URLConstants.GET_ALL_ACCOUNT;
 		try {
@@ -130,10 +160,19 @@ public class DaasManagementClient extends DaasClient {
 			throw new DaasClientException(e);
 		}
 	}
-	
-	
-	public Account getAccount(String accountName) throws DaasClientException {
-		String url = baseURL + URLConstants.MANAGEMENT_CONTEXT + String.format(URLConstants.GET_ACCOUNT, accountName);
+
+	/**
+	 * Returns a specific account identified by the account name
+	 * 
+	 * @param accName
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public Account getAccount(String accName) throws DaasClientException {
+		if (accName == null || accName.isEmpty()) {
+			throw new DaasClientException("Account Name is null");
+		}
+		String url = baseURL + URLConstants.MANAGEMENT_CONTEXT + String.format(URLConstants.GET_ACCOUNT, accName);
 		try {
 			Future<Response> f = buildRequest("get", url).execute();
 			Response r = f.get();
@@ -149,6 +188,13 @@ public class DaasManagementClient extends DaasClient {
 		}
 	}
 
+	/**
+	 * Creates an application
+	 * 
+	 * @param application
+	 * @return
+	 * @throws DaasClientException
+	 */
 	public Application createApplication(Application application) throws DaasClientException {
 
 		try {
@@ -170,6 +216,14 @@ public class DaasManagementClient extends DaasClient {
 		}
 	}
 
+	/**
+	 * Deletes an application
+	 * 
+	 * @param accName
+	 * @param appName
+	 * @return
+	 * @throws DaasClientException
+	 */
 	public boolean deleteApplication(String accName, String appName) throws DaasClientException {
 
 		try {
@@ -189,10 +243,17 @@ public class DaasManagementClient extends DaasClient {
 
 	}
 
+	/**
+	 * Returns all the applications under an account
+	 * 
+	 * @param accName
+	 * @return
+	 * @throws DaasClientException
+	 */
 	public List<Application> getApplications(String accName) throws DaasClientException {
+
 		String url = baseURL + URLConstants.MANAGEMENT_CONTEXT
 				+ String.format(URLConstants.GET_ALL_APPLICATIONS, accName);
-		;
 		try {
 			Future<Response> f = buildRequest("get", url).execute();
 			Response r = f.get();
@@ -208,6 +269,49 @@ public class DaasManagementClient extends DaasClient {
 		}
 	}
 
+	/**
+	 * Returns the application identified by the name
+	 * 
+	 * @param accName
+	 * @param appName
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public Application getApplication(String accName, String appName) throws DaasClientException {
+
+		if (accName == null || accName.isEmpty()) {
+			throw new DaasClientException("Account Name is null");
+		}
+
+		if (appName == null || appName.isEmpty()) {
+			throw new DaasClientException("App Name is null");
+		}
+
+		String url = baseURL + URLConstants.MANAGEMENT_CONTEXT
+				+ String.format(URLConstants.GET_APPLICATIONS, accName, appName);
+		try {
+			Future<Response> f = buildRequest("get", url).execute();
+			Response r = f.get();
+			if (!HttpStatusUtil.isSuccess(r))
+				throw new DaasClientException("Could not fetch all applications : " + r.getResponseBody());
+
+			Application applications = gson.fromJson(r.getResponseBody(), new TypeToken<Application>() {
+			}.getType());
+			return applications;
+
+		} catch (Exception e) {
+			throw new DaasClientException(e);
+		}
+	}
+
+	/**
+	 * Creates an Account level admin user
+	 * 
+	 * @param accName
+	 * @param user
+	 * @return
+	 * @throws DaasClientException
+	 */
 	public DaasUser createAccountUser(String accName, DaasUser user) throws DaasClientException {
 
 		try {
@@ -228,4 +332,33 @@ public class DaasManagementClient extends DaasClient {
 		}
 	}
 
+	
+	/**
+	 * Creates an Application level user
+	 * 
+	 * @param accName
+	 * @param appName
+	 * @param user
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public DaasUser createApplicationUser(String accName, String appName, DaasUser user) throws DaasClientException {
+
+		try {
+			accName = URLEncoder.encode(accName, "UTF-8");
+			String url = baseURL + URLConstants.MANAGEMENT_CONTEXT
+					+ String.format(URLConstants.CREATE_APPLICATION_USER, accName, appName);
+			Future<Response> f = buildRequest("post", url).setBody(gson.toJson(user))
+					.setHeader("Content-Type", "application/json").execute();
+			Response r = f.get();
+			if (!HttpStatusUtil.isSuccess(r))
+				throw new DaasClientException("Account user creation failed : " + r.getResponseBody());
+
+			DaasUser accountUser = gson.fromJson(r.getResponseBody(), DaasUser.class);
+			return accountUser;
+
+		} catch (Exception e) {
+			throw new DaasClientException(e);
+		}
+	}
 }
