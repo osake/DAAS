@@ -27,6 +27,8 @@ import com.bbytes.daas.dao.UserDao;
 import com.bbytes.daas.domain.DaasUser;
 import com.bbytes.daas.rest.DaasEntityNotFoundException;
 
+
+
 /**
  * Client Details Service fro spring security
  * 

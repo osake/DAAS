@@ -66,7 +66,7 @@ public interface IDaasClient {
 	 * @return
 	 */
 	public void login(String accountName, String applicationName, String clientId, String clientSecret,
-			AsyncResultHandler<Boolean> asyncResultHandler) ;
+			AsyncResultHandler<Boolean> asyncResultHandler);
 
 	/**
 	 * Create the entity in Daas Db. The UUID will be auto assigned as it is a new entity.
@@ -76,7 +76,7 @@ public interface IDaasClient {
 	 * @throws DaasClientException
 	 */
 	public <T extends Entity> T createEntity(T entity) throws DaasClientException;
-	
+
 	/**
 	 * Create the entity in Daas Db. The UUID will be auto assigned as it is a new entity.
 	 * 
@@ -162,6 +162,32 @@ public interface IDaasClient {
 	public <T extends Entity> boolean deleteEntity(T entity) throws DaasClientException;
 
 	/**
+	 * This will delete the entity with the uuid . It return success string if it deletes the
+	 * entity.
+	 * 
+	 * @param UUID
+	 * @param entityType
+	 * @param entityClassType
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> boolean deleteEntity(String UUID, String entityType, Class<T> entityClassType)
+			throws DaasClientException;
+
+	/**
+	 * This will delete the entity with the uuid . It return success string if it deletes the
+	 * entity.
+	 * 
+	 * @param UUID
+	 * @param entityType
+	 * @param entityClassType
+	 * @param asyncResultHandler
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> void deleteEntity(String UUID, String entityType, Class<T> entityClassType,
+			AsyncResultHandler<Boolean> asyncResultHandler) throws DaasClientException;
+
+	/**
 	 * This will delete the entity with the uuid inside the entity. It return success string if it
 	 * deletes the entity.Async version
 	 * 
@@ -227,7 +253,8 @@ public interface IDaasClient {
 	 * @param entityTypeName
 	 *            table name
 	 * @param toBeRelatedEntity
-	 * @param toBeRelatedEntityTypeName table name
+	 * @param toBeRelatedEntityTypeName
+	 *            table name
 	 * @param relation
 	 * @return
 	 * @throws DaasClientException
@@ -243,7 +270,8 @@ public interface IDaasClient {
 	 * @param entityTypeName
 	 *            table name
 	 * @param toBeRelatedEntity
-	 * @param toBeRelatedEntityTypeName table name
+	 * @param toBeRelatedEntityTypeName
+	 *            table name
 	 * @param relation
 	 * @return
 	 */
@@ -286,8 +314,8 @@ public interface IDaasClient {
 	 * @param entityTypeName
 	 *            table name
 	 * @param toBeRelatedEntity
-	 * @param toBeRelatedEntityTypeName table name
-	 *            table name
+	 * @param toBeRelatedEntityTypeName
+	 *            table name table name
 	 * @param relation
 	 * @return
 	 * @throws DaasClientException
@@ -304,8 +332,8 @@ public interface IDaasClient {
 	 * @param entityTypeName
 	 *            table name
 	 * @param toBeRelatedEntity
-	 * @param toBeRelatedEntityTypeName table name
-	 *            table name
+	 * @param toBeRelatedEntityTypeName
+	 *            table name table name
 	 * @param relation
 	 * @return
 	 */
@@ -327,6 +355,28 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> List<T> getEntitiesByProperty(String entityTypeName, Class<T> entityClassType,
 			Map<String, String> propertyMap) throws DaasClientException;
+
+	/**
+	 * Get all entities for given type. Note will will load the entire list from DB 
+	 * @param entityTypeName
+	 * @param entityClassType
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> List<T> getEntities(String entityTypeName, Class<T> entityClassType)
+			throws DaasClientException;
+	
+	/**
+	 * Get all entities for given type. Note will will load the entire list from DB 
+	 * 
+	 * @param entityTypeName
+	 * @param entityClassType
+	 * @param asyncResultHandler
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> void getEntities(String entityTypeName, Class<T> entityClassType,AsyncResultHandler<List<T>> asyncResultHandler)
+			throws DaasClientException;
 
 	/**
 	 * Find entity given the property map , the property check is done with OR query. If any one
@@ -454,8 +504,7 @@ public interface IDaasClient {
 	 * @return
 	 */
 	public <T extends Entity> void getEntitiesByRange(Class<T> entityClassType, String propertyName,
-			String propertyDataType, String startRange, String endRange,
-			AsyncResultHandler<List<T>> asyncResultHandler);
+			String propertyDataType, String startRange, String endRange, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * Get the entity given UUID
@@ -469,7 +518,7 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> T getEntityById(String entityTypeName, Class<T> entityClassType, String UUID)
 			throws DaasClientException;
-	
+
 	/**
 	 * Get the entity given UUID. Async version
 	 * 
@@ -479,7 +528,8 @@ public interface IDaasClient {
 	 * @param UUID
 	 * @return
 	 */
-	public <T extends Entity> void getEntityById(String entityTypeName, Class<T> entityClassType, String UUID,AsyncResultHandler<T> asyncResultHandler);
+	public <T extends Entity> void getEntityById(String entityTypeName, Class<T> entityClassType, String UUID,
+			AsyncResultHandler<T> asyncResultHandler);
 
 	/**
 	 * Get the entity given UUID
@@ -490,7 +540,7 @@ public interface IDaasClient {
 	 * @throws DaasClientException
 	 */
 	public <T extends Entity> T getEntityById(Class<T> entityClassType, String UUID) throws DaasClientException;
-	
+
 	/**
 	 * Get the entity given UUID. Async version
 	 * 
@@ -498,7 +548,8 @@ public interface IDaasClient {
 	 * @param UUID
 	 * @return
 	 */
-	public <T extends Entity> void getEntityById(Class<T> entityClassType, String UUID,AsyncResultHandler<T> asyncResultHandler);
+	public <T extends Entity> void getEntityById(Class<T> entityClassType, String UUID,
+			AsyncResultHandler<T> asyncResultHandler);
 
 	/**
 	 * Returns the size of the given entity type
@@ -509,7 +560,7 @@ public interface IDaasClient {
 	 * @throws DaasClientException
 	 */
 	public long getEntitySize(String entityTypeName) throws DaasClientException;
-	
+
 	/**
 	 * Returns the size of the given entity type. Async version
 	 * 
@@ -517,7 +568,7 @@ public interface IDaasClient {
 	 *            table name
 	 * @return
 	 */
-	public void getEntitySize(String entityTypeName,AsyncResultHandler<Long> asyncResultHandler);
+	public void getEntitySize(String entityTypeName, AsyncResultHandler<Long> asyncResultHandler);
 
 	/**
 	 * Returns the size of the given entity type
@@ -527,14 +578,14 @@ public interface IDaasClient {
 	 * @throws DaasClientException
 	 */
 	public <T extends Entity> long getEntitySize(Class<T> entityClassType) throws DaasClientException;
-	
+
 	/**
 	 * Returns the size of the given entity type. Async version
 	 * 
 	 * @param entityClassType
 	 * @return
 	 */
-	public <T extends Entity> void getEntitySize(Class<T> entityClassType,AsyncResultHandler<Long> asyncResultHandler);
+	public <T extends Entity> void getEntitySize(Class<T> entityClassType, AsyncResultHandler<Long> asyncResultHandler);
 
 	/**
 	 * This will return all right side entities in a relationship . The object mapping looks like :
@@ -550,12 +601,13 @@ public interface IDaasClient {
 	 *            mention the class type expected for entity B
 	 * @return List of entities of type B
 	 */
-	public <T extends Entity> List<T> getRightSideRelatedEntities(Entity entity, String relation, String entityTypeName,
-			Class<?> expectedClassType) throws DaasClientException;;
-	
+	public <T extends Entity> List<T> getRightSideRelatedEntities(Entity entity, String relation,
+			String entityTypeName, Class<?> expectedClassType) throws DaasClientException;;
+
 	/**
 	 * This will return all right side entities in a relationship . The object mapping looks like :
-	 * A ---relation----> B then return all B entities that has the given relationship name.Async version
+	 * A ---relation----> B then return all B entities that has the given relationship name.Async
+	 * version
 	 * 
 	 * @param entity
 	 *            Denotes entity A
@@ -568,7 +620,7 @@ public interface IDaasClient {
 	 * @return List of entities of type B
 	 */
 	public <T extends Entity> void getRightSideRelatedEntities(Entity entity, String relation, String entityTypeName,
-			Class<?> expectedClassType,AsyncResultHandler<List<T>> asyncResultHandler);
+			Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * This will return all right side entities in a relationship . The object mapping looks like :
@@ -585,10 +637,11 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> List<T> getRightSideRelatedEntities(Entity entity, String relation,
 			Class<?> expectedClassType) throws DaasClientException;
-	
+
 	/**
 	 * This will return all right side entities in a relationship . The object mapping looks like :
-	 * A ---relation----> B then return all B entities that has the given relationship name.Async version
+	 * A ---relation----> B then return all B entities that has the given relationship name.Async
+	 * version
 	 * 
 	 * @param entity
 	 *            Denotes entity A
@@ -599,7 +652,7 @@ public interface IDaasClient {
 	 * @return List of entities of type B
 	 */
 	public <T extends Entity> void getRightSideRelatedEntities(Entity entity, String relation,
-			Class<?> expectedClassType,AsyncResultHandler<List<T>> asyncResultHandler);
+			Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
@@ -619,11 +672,12 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> List<T> getLeftSideRelatedEntitiesWithOutGraph(Entity entity, String relation,
 			String entityTypeName, Class<?> expectedClassType) throws DaasClientException;
-	
+
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
 	 * ---relation----> B then return all A entities that has the given relationship name.This
-	 * method does not load the member field, just fetches the main entities.Async version.Async version
+	 * method does not load the member field, just fetches the main entities.Async version.Async
+	 * version
 	 * 
 	 * @param entity
 	 *            Denotes entity B
@@ -636,7 +690,7 @@ public interface IDaasClient {
 	 * @return List of entities of type A
 	 */
 	public <T extends Entity> void getLeftSideRelatedEntitiesWithOutGraph(Entity entity, String relation,
-			String entityTypeName, Class<?> expectedClassType,AsyncResultHandler<List<T>> asyncResultHandler);
+			String entityTypeName, Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
@@ -654,7 +708,7 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> List<T> getLeftSideRelatedEntitiesWithOutGraph(Entity entity, String relation,
 			Class<?> expectedClassType) throws DaasClientException;
-	
+
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
 	 * ---relation----> B then return all A entities that has the given relationship name.This
@@ -669,7 +723,7 @@ public interface IDaasClient {
 	 * @return List of entities of type A
 	 */
 	public <T extends Entity> void getLeftSideRelatedEntitiesWithOutGraph(Entity entity, String relation,
-			Class<?> expectedClassType,AsyncResultHandler<List<T>> asyncResultHandler);
+			Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
@@ -688,10 +742,11 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> List<T> getLeftSideRelatedEntitiesWithGraph(Entity entity, String relation,
 			String entityTypeName, Class<?> expectedClassType) throws DaasClientException;
-	
+
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
-	 * ---relation----> B then return all A entities that has the given relationship name.Async version
+	 * ---relation----> B then return all A entities that has the given relationship name.Async
+	 * version
 	 * 
 	 * @param entity
 	 *            Denotes entity B
@@ -704,7 +759,7 @@ public interface IDaasClient {
 	 * @return List of entities of type A
 	 */
 	public <T extends Entity> void getLeftSideRelatedEntitiesWithGraph(Entity entity, String relation,
-			String entityTypeName, Class<?> expectedClassType,AsyncResultHandler<List<T>> asyncResultHandler);
+			String entityTypeName, Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
@@ -721,10 +776,11 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> List<T> getLeftSideRelatedEntitiesWithGraph(Entity entity, String relation,
 			Class<?> expectedClassType) throws DaasClientException;
-	
+
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
-	 * ---relation----> B then return all A entities that has the given relationship name.Async version
+	 * ---relation----> B then return all A entities that has the given relationship name.Async
+	 * version
 	 * 
 	 * @param entity
 	 *            Denotes entity B
@@ -735,7 +791,7 @@ public interface IDaasClient {
 	 * @return List of entities of type A
 	 */
 	public <T extends Entity> void getLeftSideRelatedEntitiesWithGraph(Entity entity, String relation,
-			Class<?> expectedClassType,AsyncResultHandler<List<T>> asyncResultHandler);
+			Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
@@ -752,10 +808,11 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> List<T> getLeftSideRelatedEntities(Entity entity, String relation,
 			Class<?> expectedClassType) throws DaasClientException;
-	
+
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
-	 * ---relation----> B then return all A entities that has the given relationship name.Async version
+	 * ---relation----> B then return all A entities that has the given relationship name.Async
+	 * version
 	 * 
 	 * @param entity
 	 *            Denotes entity B
@@ -766,7 +823,7 @@ public interface IDaasClient {
 	 * @return List of entities of type A
 	 */
 	public <T extends Entity> void getLeftSideRelatedEntities(Entity entity, String relation,
-			Class<?> expectedClassType,AsyncResultHandler<List<T>> asyncResultHandler);
+			Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
@@ -785,10 +842,11 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> List<T> getLeftSideRelatedEntities(Entity entity, String relation, String entityTypeName,
 			Class<?> expectedClassType) throws DaasClientException;
-	
+
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
-	 * ---relation----> B then return all A entities that has the given relationship name.Async version
+	 * ---relation----> B then return all A entities that has the given relationship name.Async
+	 * version
 	 * 
 	 * @param entity
 	 *            Denotes entity B
@@ -801,7 +859,7 @@ public interface IDaasClient {
 	 * @return List of entities of type A
 	 */
 	public <T extends Entity> void getLeftSideRelatedEntities(Entity entity, String relation, String entityTypeName,
-			Class<?> expectedClassType,AsyncResultHandler<List<T>> asyncResultHandler);
+			Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * Close Daas client and free resources

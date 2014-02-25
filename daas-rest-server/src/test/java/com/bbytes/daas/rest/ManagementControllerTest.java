@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.bbytes.daas.db.orientDb.TenantRouter;
-import com.bbytes.daas.security.DaasClientDetailsService;
 
 /**
  * Unit test for Endure Rest Services using Usergrid as the BAAS
