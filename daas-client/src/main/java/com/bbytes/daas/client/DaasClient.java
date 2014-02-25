@@ -305,6 +305,9 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	public <T extends Entity> List<T> getEntitiesByProperty(String entityTypeName, Class<T> entityClassType,
 			Map<String, String> propertyMap) throws DaasClientException {
 		try {
+			if(propertyMap == null || propertyMap.isEmpty()) {
+				return null;
+			}
 			String url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityTypeName;
 
 			// create parameter map from propertyMap
@@ -1730,7 +1733,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 				f = buildRequest("post", url).setBody(gson.toJson(entity))
 						.setHeader("Content-Type", "application/json").execute();
 			} else {
-				url = baseURL + "/" + accountName + "/" + applicationName + "/" + entity.getClass().getSimpleName()
+				url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityType
 						+ "/" + entity.getUuid();
 				f = buildRequest("put", url).setBody(gson.toJson(entity)).setHeader("Content-Type", "application/json")
 						.execute();

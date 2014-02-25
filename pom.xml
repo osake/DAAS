@@ -397,8 +397,8 @@
 	</build>
 
 	<modules>
-		<module>daas-rest-server</module>
 		<module>daas-domain</module>
+		<module>daas-rest-server</module>
 		<module>daas-client</module>
 		<module>daas-backup</module>
 	</modules>
