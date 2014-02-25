@@ -104,7 +104,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 
 		DaasClientUtil.validateArg(host, "Host value cannot be null or empty");
 		DaasClientUtil.validateArg(port, "Port value cannot be null or empty");
-		
+
 		this.host = host;
 		this.port = port;
 
@@ -199,12 +199,11 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	 */
 	public boolean login(String accountName, String applicationName, String clientId, String clientSecret)
 			throws DaasClientException {
-		
+
 		DaasClientUtil.validateArg(accountName, "Account name cannot be null or empty");
 		DaasClientUtil.validateArg(clientId, "clientId  cannot be null or empty");
 		DaasClientUtil.validateArg(clientSecret, "clientSecret cannot be null or empty");
-		
-		
+
 		this.accountName = accountName;
 		this.applicationName = applicationName;
 
@@ -314,22 +313,23 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	public <T extends Entity> List<T> getEntitiesByProperty(String entityTypeName, Class<T> entityClassType,
 			Map<String, String> propertyMap) throws DaasClientException {
 		try {
-			if(propertyMap == null || propertyMap.isEmpty()) {
-				return null;
-			}
+			
 			String url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityTypeName;
-
-			// create parameter map from propertyMap
-			Map<String, Collection<String>> parameters = new HashMap<String, Collection<String>>();
-			for (Iterator<String> iterator = propertyMap.keySet().iterator(); iterator.hasNext();) {
-				String key = iterator.next();
-				List<String> values = new ArrayList<String>();
-				values.add(propertyMap.get(key));
-				parameters.put(key, values);
+			Future<Response> f = null;
+			if (propertyMap != null && !propertyMap.isEmpty()) {
+				// create parameter map from propertyMap
+				Map<String, Collection<String>> parameters = new HashMap<String, Collection<String>>();
+				for (Iterator<String> iterator = propertyMap.keySet().iterator(); iterator.hasNext();) {
+					String key = iterator.next();
+					List<String> values = new ArrayList<String>();
+					values.add(propertyMap.get(key));
+					parameters.put(key, values);
+				}
+				f = buildRequest("get", url).setHeader("Content-Type", "application/json")
+						.setQueryParameters(new FluentStringsMap(parameters)).execute();
+			} else {
+				f = buildRequest("get", url).setHeader("Content-Type", "application/json").execute();
 			}
-
-			Future<Response> f = buildRequest("get", url).setHeader("Content-Type", "application/json")
-					.setQueryParameters(new FluentStringsMap(parameters)).execute();
 
 			Response r = f.get();
 
@@ -419,7 +419,9 @@ public class DaasClient implements IDaasClient, InitializingBean {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.bbytes.daas.client.IDaasClient#getEntities(java.lang.String, java.lang.Class)
 	 */
 	@Override
@@ -428,13 +430,16 @@ public class DaasClient implements IDaasClient, InitializingBean {
 		return getEntitiesByProperty(entityTypeName, entityClassType, null);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.bbytes.daas.client.IDaasClient#getEntities(java.lang.String, java.lang.Class, com.bbytes.daas.client.AsyncResultHandler)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#getEntities(java.lang.String, java.lang.Class,
+	 * com.bbytes.daas.client.AsyncResultHandler)
 	 */
 	@Override
 	public <T extends Entity> void getEntities(final String entityTypeName, final Class<T> entityClassType,
 			AsyncResultHandler<List<T>> asyncResultHandler) throws DaasClientException {
-		
+
 		if (asyncResultHandler == null)
 			return;
 
@@ -449,9 +454,9 @@ public class DaasClient implements IDaasClient, InitializingBean {
 		DaasClientCallAsyncTask<List<T>> asyncTask = new DaasClientCallAsyncTask<List<T>>(getEntitiesByRange,
 				asyncResultHandler);
 		executor.submit(asyncTask);
-		
+
 	}
-	
+
 	/**
 	 * It is the range query where it checks if greater than or equal to start range and smaller
 	 * than or equal to end range. Any one range is required. Datatype will say what data type to be
@@ -1742,8 +1747,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 				f = buildRequest("post", url).setBody(gson.toJson(entity))
 						.setHeader("Content-Type", "application/json").execute();
 			} else {
-				url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityType
-						+ "/" + entity.getUuid();
+				url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityType + "/" + entity.getUuid();
 				f = buildRequest("put", url).setBody(gson.toJson(entity)).setHeader("Content-Type", "application/json")
 						.execute();
 			}
@@ -1871,19 +1875,22 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	public <T extends Entity> boolean deleteEntity(String UUID, String entityType, Class<T> entityClassType)
 			throws DaasClientException {
 		T entity = getEntityById(entityType, entityClassType, UUID);
-		return deleteEntityFullGraph(entity);
+		return deleteEntityFullGraph(entity, entityType);
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.bbytes.daas.client.IDaasClient#deleteEntity(java.lang.String, java.lang.String, java.lang.Class, com.bbytes.daas.client.AsyncResultHandler)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#deleteEntity(java.lang.String, java.lang.String,
+	 * java.lang.Class, com.bbytes.daas.client.AsyncResultHandler)
 	 */
 	@Override
-	public <T extends Entity> void deleteEntity(final String UUID, final String entityType, final Class<T> entityClassType,
-			AsyncResultHandler<Boolean> asyncResultHandler) throws DaasClientException {
-		
+	public <T extends Entity> void deleteEntity(final String UUID, final String entityType,
+			final Class<T> entityClassType, AsyncResultHandler<Boolean> asyncResultHandler) throws DaasClientException {
+
 		if (asyncResultHandler == null)
 			return;
-		
+
 		Callable<Boolean> deleteEntity = new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
@@ -1895,7 +1902,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 		DaasClientCallAsyncTask<Boolean> asyncTask = new DaasClientCallAsyncTask<Boolean>(deleteEntity,
 				asyncResultHandler);
 		executor.submit(asyncTask);
-		
+
 	}
 
 	/*
@@ -2110,9 +2117,5 @@ public class DaasClient implements IDaasClient, InitializingBean {
 				.setExclusionStrategies(new RelationAnnotationExclStrat()).create();
 		executor = Executors.newCachedThreadPool();
 	}
-
-	
-
-
 
 }
