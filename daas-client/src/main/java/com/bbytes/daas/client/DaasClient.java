@@ -104,7 +104,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 
 		DaasClientUtil.validateArg(host, "Host value cannot be null or empty");
 		DaasClientUtil.validateArg(port, "Port value cannot be null or empty");
-		
+
 		this.host = host;
 		this.port = port;
 
@@ -115,6 +115,8 @@ public class DaasClient implements IDaasClient, InitializingBean {
 
 		asyncHttpClient = new AsyncHttpClient(builder.build());
 
+		// this gson object has special date convertor required for oriend db and has the logic to
+		// exclude the objects that are marked as @Relation
 		gson = new GsonBuilder().registerTypeAdapter(Date.class, SerializerUtil.getSerializerForDate())
 				.registerTypeAdapter(Date.class, SerializerUtil.getDeSerializerForDate())
 				.setExclusionStrategies(new RelationAnnotationExclStrat()).create();
@@ -199,12 +201,11 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	 */
 	public boolean login(String accountName, String applicationName, String clientId, String clientSecret)
 			throws DaasClientException {
-		
+
 		DaasClientUtil.validateArg(accountName, "Account name cannot be null or empty");
 		DaasClientUtil.validateArg(clientId, "clientId  cannot be null or empty");
 		DaasClientUtil.validateArg(clientSecret, "clientSecret cannot be null or empty");
-		
-		
+
 		this.accountName = accountName;
 		this.applicationName = applicationName;
 
@@ -247,6 +248,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	 * @throws DaasClientException
 	 */
 	public <T extends Entity> T loadLazyRelation(T entity) throws DaasClientException {
+		DaasClientUtil.validateArg(entity, "Entity cannot be null");
 		return loadEntityFullGraph(entity, true);
 	}
 
@@ -259,11 +261,12 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	 * @throws DaasClientException
 	 */
 	private <T extends Entity> T loadRelation(T entity) throws DaasClientException {
+		DaasClientUtil.validateArg(entity, "Entity cannot be null");
 		return loadEntityFullGraph(entity, false);
 	}
 
 	private <T extends Entity> T loadEntityFullGraph(T entity, boolean loadLazy) throws DaasClientException {
-
+		DaasClientUtil.validateArg(entity, "Entity cannot be null");
 		if (entity == null) {
 			throw new IllegalArgumentException("Entity cannot be null");
 		}
@@ -313,8 +316,11 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	 */
 	public <T extends Entity> List<T> getEntitiesByProperty(String entityTypeName, Class<T> entityClassType,
 			Map<String, String> propertyMap) throws DaasClientException {
+		DaasClientUtil.validateArg(entityTypeName, "Entity type cannot be null");
+		DaasClientUtil.validateArg(entityClassType, "Entity class type cannot be null");
+
 		try {
-			if(propertyMap == null || propertyMap.isEmpty()) {
+			if (propertyMap == null || propertyMap.isEmpty()) {
 				return null;
 			}
 			String url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityTypeName;
@@ -419,7 +425,9 @@ public class DaasClient implements IDaasClient, InitializingBean {
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.bbytes.daas.client.IDaasClient#getEntities(java.lang.String, java.lang.Class)
 	 */
 	@Override
@@ -428,13 +436,16 @@ public class DaasClient implements IDaasClient, InitializingBean {
 		return getEntitiesByProperty(entityTypeName, entityClassType, null);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.bbytes.daas.client.IDaasClient#getEntities(java.lang.String, java.lang.Class, com.bbytes.daas.client.AsyncResultHandler)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#getEntities(java.lang.String, java.lang.Class,
+	 * com.bbytes.daas.client.AsyncResultHandler)
 	 */
 	@Override
 	public <T extends Entity> void getEntities(final String entityTypeName, final Class<T> entityClassType,
 			AsyncResultHandler<List<T>> asyncResultHandler) throws DaasClientException {
-		
+
 		if (asyncResultHandler == null)
 			return;
 
@@ -449,9 +460,9 @@ public class DaasClient implements IDaasClient, InitializingBean {
 		DaasClientCallAsyncTask<List<T>> asyncTask = new DaasClientCallAsyncTask<List<T>>(getEntitiesByRange,
 				asyncResultHandler);
 		executor.submit(asyncTask);
-		
+
 	}
-	
+
 	/**
 	 * It is the range query where it checks if greater than or equal to start range and smaller
 	 * than or equal to end range. Any one range is required. Datatype will say what data type to be
@@ -1699,6 +1710,136 @@ public class DaasClient implements IDaasClient, InitializingBean {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#createAsSingleEntity(com.bbytes.daas.domain.Entity)
+	 */
+	@Override
+	public <T extends Entity> T createAsSingleEntity(T entity) throws DaasClientException {
+		return createOrUpdateSingleEntity(entity, "create");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#createAsSingleEntity(com.bbytes.daas.domain.Entity,
+	 * com.bbytes.daas.client.AsyncResultHandler)
+	 */
+	@Override
+	public <T extends Entity> void createAsSingleEntity(final T entity, AsyncResultHandler<T> asyncResultHandler)
+			throws DaasClientException {
+		if (asyncResultHandler == null)
+			return;
+
+		Callable<T> updateEntity = new Callable<T>() {
+			@Override
+			public T call() throws Exception {
+				T result = createAsSingleEntity(entity);
+				return result;
+			}
+		};
+
+		DaasClientCallAsyncTask<T> asyncTask = new DaasClientCallAsyncTask<T>(updateEntity, asyncResultHandler);
+		executor.submit(asyncTask);
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#createAsSingleEntity(com.bbytes.daas.domain.Entity,
+	 * java.lang.String)
+	 */
+	@Override
+	public <T extends Entity> T createAsSingleEntity(T entity, String entityTypeName) throws DaasClientException {
+		return createOrUpdateSingleEntity(entity, entityTypeName, "create");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#createAsSingleEntity(com.bbytes.daas.domain.Entity,
+	 * java.lang.String, com.bbytes.daas.client.AsyncResultHandler)
+	 */
+	@Override
+	public <T extends Entity> void createAsSingleEntity(final T entity, final String entityTypeName,
+			AsyncResultHandler<T> asyncResultHandler) throws DaasClientException {
+		if (asyncResultHandler == null)
+			return;
+
+		Callable<T> updateEntity = new Callable<T>() {
+			@Override
+			public T call() throws Exception {
+				T result = createAsSingleEntity(entity, entityTypeName);
+				return result;
+			}
+		};
+
+		DaasClientCallAsyncTask<T> asyncTask = new DaasClientCallAsyncTask<T>(updateEntity, asyncResultHandler);
+		executor.submit(asyncTask);
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#updateAsSingleEntity(com.bbytes.daas.domain.Entity,
+	 * java.lang.String)
+	 */
+	@Override
+	public <T extends Entity> T updateAsSingleEntity(T entity, String entityTypeName) throws DaasClientException {
+		return createOrUpdateSingleEntity(entity, entityTypeName, "update");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#updateAsSingleEntity(com.bbytes.daas.domain.Entity,
+	 * java.lang.String, com.bbytes.daas.client.AsyncResultHandler)
+	 */
+	@Override
+	public <T extends Entity> void updateAsSingleEntity(final T entity, final String entityTypeName,
+			AsyncResultHandler<T> asyncResultHandler) throws DaasClientException {
+		if (asyncResultHandler == null)
+			return;
+
+		Callable<T> updateEntity = new Callable<T>() {
+			@Override
+			public T call() throws Exception {
+				T result = updateAsSingleEntity(entity, entityTypeName);
+				return result;
+			}
+		};
+
+		DaasClientCallAsyncTask<T> asyncTask = new DaasClientCallAsyncTask<T>(updateEntity, asyncResultHandler);
+		executor.submit(asyncTask);
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#updateAsSingleEntity(com.bbytes.daas.domain.Entity)
+	 */
+	@Override
+	public <T extends Entity> T updateAsSingleEntity(T entity) throws DaasClientException {
+		return createOrUpdateSingleEntity(entity, "update");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#updateAsSingleEntity(com.bbytes.daas.domain.Entity,
+	 * com.bbytes.daas.client.AsyncResultHandler)
+	 */
+	@Override
+	public <T extends Entity> void updateAsSingleEntity(T entity, AsyncResultHandler<T> asyncResultHandler)
+			throws DaasClientException {
+		// TODO Auto-generated method stub
+
+	}
+
 	/**
 	 * Doesn't read the annotation {@link Relation} to store full graph but jus saves or updates the
 	 * entity passed as single entity and not graph.
@@ -1709,7 +1850,6 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	 * @return
 	 * @throws DaasClientException
 	 */
-	@SuppressWarnings("unused")
 	private <T extends Entity> T createOrUpdateSingleEntity(T entity, String action) throws DaasClientException {
 		return createOrUpdateSingleEntity(entity, entity.getClass().getSimpleName(), action);
 	}
@@ -1742,8 +1882,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 				f = buildRequest("post", url).setBody(gson.toJson(entity))
 						.setHeader("Content-Type", "application/json").execute();
 			} else {
-				url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityType
-						+ "/" + entity.getUuid();
+				url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityType + "/" + entity.getUuid();
 				f = buildRequest("put", url).setBody(gson.toJson(entity)).setHeader("Content-Type", "application/json")
 						.execute();
 			}
@@ -1873,17 +2012,20 @@ public class DaasClient implements IDaasClient, InitializingBean {
 		T entity = getEntityById(entityType, entityClassType, UUID);
 		return deleteEntityFullGraph(entity);
 	}
-	
-	/* (non-Javadoc)
-	 * @see com.bbytes.daas.client.IDaasClient#deleteEntity(java.lang.String, java.lang.String, java.lang.Class, com.bbytes.daas.client.AsyncResultHandler)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.client.IDaasClient#deleteEntity(java.lang.String, java.lang.String,
+	 * java.lang.Class, com.bbytes.daas.client.AsyncResultHandler)
 	 */
 	@Override
-	public <T extends Entity> void deleteEntity(final String UUID, final String entityType, final Class<T> entityClassType,
-			AsyncResultHandler<Boolean> asyncResultHandler) throws DaasClientException {
-		
+	public <T extends Entity> void deleteEntity(final String UUID, final String entityType,
+			final Class<T> entityClassType, AsyncResultHandler<Boolean> asyncResultHandler) throws DaasClientException {
+
 		if (asyncResultHandler == null)
 			return;
-		
+
 		Callable<Boolean> deleteEntity = new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
@@ -1895,7 +2037,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 		DaasClientCallAsyncTask<Boolean> asyncTask = new DaasClientCallAsyncTask<Boolean>(deleteEntity,
 				asyncResultHandler);
 		executor.submit(asyncTask);
-		
+
 	}
 
 	/*
@@ -2110,9 +2252,5 @@ public class DaasClient implements IDaasClient, InitializingBean {
 				.setExclusionStrategies(new RelationAnnotationExclStrat()).create();
 		executor = Executors.newCachedThreadPool();
 	}
-
-	
-
-
 
 }

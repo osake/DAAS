@@ -78,12 +78,33 @@ public interface IDaasClient {
 	public <T extends Entity> T createEntity(T entity) throws DaasClientException;
 
 	/**
+	 * Create the entity in Daas Db. The complex objects are stored as json in the same object . The
+	 * object graph is stored as one single json string in DB
+	 * 
+	 * @param entity
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> T createAsSingleEntity(T entity) throws DaasClientException;
+
+	/**
 	 * Create the entity in Daas Db. The UUID will be auto assigned as it is a new entity.
 	 * 
 	 * @param entity
 	 * @return
 	 */
 	public <T extends Entity> void createEntity(T entity, AsyncResultHandler<T> asyncResultHandler);
+
+	/**
+	 * Create the entity in Daas Db. The complex objects are stored as json in the same object . The
+	 * object graph is stored as one single json string in DB
+	 * 
+	 * @param entity
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> void createAsSingleEntity(T entity, AsyncResultHandler<T> asyncResultHandler)
+			throws DaasClientException;
 
 	/**
 	 * Create the entity in Daas Db. The UUID will be auto assigned as it is a new entity.
@@ -107,6 +128,29 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> void createEntity(T entity, String entityTypeName,
 			AsyncResultHandler<T> asyncResultHandler);
+
+	/**
+	 * Create the entity in Daas Db. The complex objects are stored as json in the same object . The
+	 * object graph is stored as one single json string in DB
+	 * 
+	 * @param entity
+	 * @param entityTypeName
+	 *            table name
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> T createAsSingleEntity(T entity, String entityTypeName) throws DaasClientException;
+
+	/**
+	 * Create the entity in Daas Db. The complex objects are stored as json in the same object . The
+	 * object graph is stored as one single json string in DB
+	 * 
+	 * @param entity
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> void createAsSingleEntity(T entity, String entityTypeName,
+			AsyncResultHandler<T> asyncResultHandler) throws DaasClientException;
 
 	/**
 	 * This will update the entity with the uuid in the entity object , if the uuid is missing then
@@ -133,6 +177,31 @@ public interface IDaasClient {
 			AsyncResultHandler<T> asyncResultHandler);
 
 	/**
+	 * Update the entity in Daas Db. The complex objects are stored as json in the same object . The
+	 * object graph is stored as one single json string in DB
+	 * 
+	 * @param entity
+	 * @param entityTypeName
+	 *            table name
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> T updateAsSingleEntity(T entity, String entityTypeName) throws DaasClientException;
+
+	/**
+	 * Update the entity in Daas Db. The complex objects are stored as json in the same object . The
+	 * object graph is stored as one single json string in DB
+	 * 
+	 * @param entity
+	 * @param entityTypeName
+	 *            table name
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> void updateAsSingleEntity(T entity, String entityTypeName,
+			AsyncResultHandler<T> asyncResultHandler) throws DaasClientException;
+
+	/**
 	 * This will update the entity with the uuid in the entity object , if the uuid is missing then
 	 * it will be treated as new object.
 	 * 
@@ -143,6 +212,16 @@ public interface IDaasClient {
 	public <T extends Entity> T updateEntity(T entity) throws DaasClientException;
 
 	/**
+	 * Update the entity in Daas Db. The complex objects are stored as json in the same object . The
+	 * object graph is stored as one single json string in DB
+	 * 
+	 * @param entity
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> T updateAsSingleEntity(T entity) throws DaasClientException;
+
+	/**
 	 * This will update the entity with the uuid in the entity object , if the uuid is missing then
 	 * it will be treated as new object.
 	 * 
@@ -150,6 +229,17 @@ public interface IDaasClient {
 	 * @return
 	 */
 	public <T extends Entity> void updateEntity(T entity, AsyncResultHandler<T> asyncResultHandler);
+
+	/**
+	 * Update the entity in Daas Db. The complex objects are stored as json in the same object . The
+	 * object graph is stored as one single json string in DB
+	 * 
+	 * @param entity
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> void updateAsSingleEntity(T entity, AsyncResultHandler<T> asyncResultHandler)
+			throws DaasClientException;
 
 	/**
 	 * This will delete the entity with the uuid inside the entity. It return success string if it
@@ -357,7 +447,8 @@ public interface IDaasClient {
 			Map<String, String> propertyMap) throws DaasClientException;
 
 	/**
-	 * Get all entities for given type. Note will will load the entire list from DB 
+	 * Get all entities for given type. Note will will load the entire list from DB
+	 * 
 	 * @param entityTypeName
 	 * @param entityClassType
 	 * @return
@@ -365,9 +456,9 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> List<T> getEntities(String entityTypeName, Class<T> entityClassType)
 			throws DaasClientException;
-	
+
 	/**
-	 * Get all entities for given type. Note will will load the entire list from DB 
+	 * Get all entities for given type. Note will will load the entire list from DB
 	 * 
 	 * @param entityTypeName
 	 * @param entityClassType
@@ -375,8 +466,8 @@ public interface IDaasClient {
 	 * @return
 	 * @throws DaasClientException
 	 */
-	public <T extends Entity> void getEntities(String entityTypeName, Class<T> entityClassType,AsyncResultHandler<List<T>> asyncResultHandler)
-			throws DaasClientException;
+	public <T extends Entity> void getEntities(String entityTypeName, Class<T> entityClassType,
+			AsyncResultHandler<List<T>> asyncResultHandler) throws DaasClientException;
 
 	/**
 	 * Find entity given the property map , the property check is done with OR query. If any one
