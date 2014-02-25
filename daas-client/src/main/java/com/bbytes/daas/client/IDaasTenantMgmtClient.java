@@ -19,7 +19,7 @@ import com.bbytes.daas.domain.Account;
 import com.bbytes.daas.domain.DaasUser;
 
 /**
- * 
+ * Daas tenant mgmt client
  * 
  * @author Thanneer
  * 

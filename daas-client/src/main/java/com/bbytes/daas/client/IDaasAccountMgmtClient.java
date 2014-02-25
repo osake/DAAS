@@ -19,13 +19,13 @@ import com.bbytes.daas.domain.Application;
 import com.bbytes.daas.domain.DaasUser;
 
 /**
- * 
+ * Daas accn mgmt client
  *
  * @author Thanneer
  *
  * @version 
  */
-public interface IDaasAccountMgmtClient {
+public interface IDaasAccountMgmtClient extends IDaasClient{
 
 	/**
 	 * Logs in to the DAAS Server as account admin
