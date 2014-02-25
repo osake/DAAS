@@ -39,11 +39,9 @@ public class ManagementController {
 
 	@Autowired
 	private ManagementService managementService;
-	
+
 	@Autowired
 	private UserService userService;
-
-
 
 	/**
 	 * Create account
@@ -59,7 +57,7 @@ public class ManagementController {
 		LOG.debug("Request to create account : " + accountName);
 		return managementService.createAccount(accountName);
 	}
-	
+
 	/**
 	 * Get account count
 	 * 
@@ -73,7 +71,7 @@ public class ManagementController {
 	Long createAccount() throws DaasPersistentException {
 		return managementService.getAccountCount();
 	}
-	
+
 	/**
 	 * Get account
 	 * 
@@ -81,32 +79,39 @@ public class ManagementController {
 	 * @return
 	 * @throws DaasException
 	 * @throws DaasPersistentException
-	 * @throws DaasEntityNotFoundException 
+	 * @throws DaasEntityNotFoundException
 	 */
 	@RequestMapping(value = "/accounts/{accountName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Account getAccount(@PathVariable("accountName") String accountName) throws DaasPersistentException, DaasEntityNotFoundException {
+	Account getAccount(@PathVariable("accountName") String accountName) throws DaasPersistentException,
+			DaasEntityNotFoundException {
 		return managementService.getAccount(accountName);
 	}
-	
+
 	/**
-	 * Update account status to active or inactive 
+	 * Update account status to active or inactive
 	 * 
 	 * @param accountName
-	 * @param active can be true or TRUE , false or FALSE
+	 * @param active
+	 *            can be true or TRUE , false or FALSE
 	 * @return
 	 * @throws DaasException
 	 * @throws DaasPersistentException
-	 * @throws DaasEntityNotFoundException 
+	 * @throws DaasEntityNotFoundException
 	 */
 	@RequestMapping(value = "/accounts/{accountName}/{active}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	boolean activateOrDeactivateAccount(@PathVariable("accountName") String accountName,@PathVariable("active") String active) throws DaasPersistentException, DaasEntityNotFoundException {
-		Account account=  managementService.getAccount(accountName);
+	boolean activateOrDeactivateAccount(@PathVariable("accountName") String accountName,
+			@PathVariable("active") String active) throws DaasPersistentException, DaasEntityNotFoundException {
+		Account account = managementService.getAccount(accountName);
+		if (account == null)
+			return false;
+
 		account.setActive(Boolean.parseBoolean(active));
+		managementService.updateAccount(account);
 		return true;
 	}
-	
+
 	/**
 	 * Delete account
 	 * 
@@ -114,11 +119,12 @@ public class ManagementController {
 	 * @return
 	 * @throws DaasException
 	 * @throws DaasPersistentException
-	 * @throws DaasEntityNotFoundException 
+	 * @throws DaasEntityNotFoundException
 	 */
 	@RequestMapping(value = "/accounts/{accountName}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	boolean deleteAccount(@PathVariable("accountName") String accountName) throws DaasPersistentException, DaasEntityNotFoundException {
+	boolean deleteAccount(@PathVariable("accountName") String accountName) throws DaasPersistentException,
+			DaasEntityNotFoundException {
 		return managementService.deleteAccount(accountName);
 	}
 
@@ -137,11 +143,11 @@ public class ManagementController {
 			throws DaasException, DaasPersistentException {
 		return userService.createAccountUser(accountName, user);
 	}
-	
-	@RequestMapping(value = "/accounts/{accountName}/user/{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,  consumes = MediaType.APPLICATION_JSON_VALUE)
+
+	@RequestMapping(value = "/accounts/{accountName}/user/{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	String changePassword(@PathVariable("accountName") String accountName, @PathVariable("id") String userUuid, @RequestBody String data)
-			throws DaasException, DaasPersistentException {
+	String changePassword(@PathVariable("accountName") String accountName, @PathVariable("id") String userUuid,
+			@RequestBody String data) throws DaasException, DaasPersistentException {
 		JsonNode node = null;
 		try {
 			node = new ObjectMapper().readTree(data);
@@ -149,20 +155,19 @@ public class ManagementController {
 			String newPassword = node.get("newPassword").getTextValue();
 			DaasUser updated = userService.updateUserPassword(oldPassword, newPassword, userUuid);
 			boolean status = false;
-			if(updated!=null) {
+			if (updated != null) {
 				status = true;
 			}
-			return "{\"status\" : "+ status+" }"; 
+			return "{\"status\" : " + status + " }";
 		} catch (IOException | DaasEntityNotFoundException e) {
 			throw new DaasPersistentException(e);
 		}
 	}
-	
-	
+
 	@RequestMapping(value = "/accounts/{accountName}/user", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	List<DaasUser> getAccountUsers(@PathVariable("accountName") String accountName)
-			throws DaasException, DaasEntityNotFoundException {
+	List<DaasUser> getAccountUsers(@PathVariable("accountName") String accountName) throws DaasException,
+			DaasEntityNotFoundException {
 		return userService.getAccountUsers(accountName);
 	}
 
@@ -186,7 +191,8 @@ public class ManagementController {
 	 * 
 	 * @param accountName
 	 * @param applicationName
-	 * @param application TODO
+	 * @param application
+	 *            TODO
 	 * @return
 	 * @throws DaasException
 	 * @throws DaasPersistentException
@@ -203,8 +209,7 @@ public class ManagementController {
 					application.getApplicationSubType(), application.getFullName());
 		}
 	}
-	
-	
+
 	/**
 	 * Edits the application type and subtype
 	 * 
@@ -226,24 +231,24 @@ public class ManagementController {
 		}
 		return application;
 	}
-	
+
 	/**
-	 * Get App 
+	 * Get App
 	 * 
 	 * @param accountName
 	 * @param applicationName
 	 * @return
 	 * @throws DaasException
 	 * @throws DaasPersistentException
-	 * @throws DaasEntityNotFoundException 
+	 * @throws DaasEntityNotFoundException
 	 */
 	@RequestMapping(value = "/accounts/{accountName}/applications/{applicationName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Application getApplication(@PathVariable String accountName,
-			@PathVariable("applicationName") String applicationName) throws DaasPersistentException, DaasEntityNotFoundException {
+	Application getApplication(@PathVariable String accountName, @PathVariable("applicationName") String applicationName)
+			throws DaasPersistentException, DaasEntityNotFoundException {
 		return managementService.getApplication(accountName, applicationName);
 	}
-	
+
 	/**
 	 * Delete App inside account
 	 * 
@@ -252,12 +257,12 @@ public class ManagementController {
 	 * @return
 	 * @throws DaasException
 	 * @throws DaasPersistentException
-	 * @throws DaasEntityNotFoundException 
+	 * @throws DaasEntityNotFoundException
 	 */
 	@RequestMapping(value = "/accounts/{accountName}/applications/{applicationName}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	boolean deleteApplication(@PathVariable String accountName,
-			@PathVariable("applicationName") String applicationName) throws DaasPersistentException, DaasEntityNotFoundException {
+	boolean deleteApplication(@PathVariable String accountName, @PathVariable("applicationName") String applicationName)
+			throws DaasPersistentException, DaasEntityNotFoundException {
 		return managementService.deleteApplication(accountName, applicationName);
 	}
 
@@ -279,17 +284,18 @@ public class ManagementController {
 	}
 
 	/**
-	 *  get all Apps inside account
-	 *  
+	 * get all Apps inside account
+	 * 
 	 * @param accountName
 	 * @return
 	 * @throws DaasException
 	 * @throws DaasPersistentException
-	 * @throws DaasEntityNotFoundException 
+	 * @throws DaasEntityNotFoundException
 	 */
 	@RequestMapping(value = "/accounts/{accountName}/applications", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	List<Application> getApplications(@PathVariable String accountName) throws DaasPersistentException, DaasEntityNotFoundException {
+	List<Application> getApplications(@PathVariable String accountName) throws DaasPersistentException,
+			DaasEntityNotFoundException {
 		return managementService.getAllApplications(accountName);
 	}
 }

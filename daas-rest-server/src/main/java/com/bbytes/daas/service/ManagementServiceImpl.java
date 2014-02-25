@@ -82,6 +82,16 @@ public class ManagementServiceImpl implements ManagementService {
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see com.bbytes.daas.service.ManagementService#updateAccount(java.lang.String)
+	 */
+	@Override
+	public Account updateAccount(Account account) throws DaasPersistentException {
+		return accountDao.update(account);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.bbytes.daas.service.ManagementService#createApplication(java.lang.String,
 	 * java.lang.String)
 	 */

@@ -44,6 +44,9 @@ public interface ManagementService {
 	public Account createAccount(String accountName) throws DaasPersistentException;
 	
 	@PreAuthorize("hasRole('ROLE_TENENT_ADMIN')")
+	public Account updateAccount(Account account) throws DaasPersistentException;
+	
+	@PreAuthorize("hasRole('ROLE_TENENT_ADMIN')")
 	public boolean deleteAccount(String accountName) throws DaasPersistentException,DaasEntityNotFoundException;
 
 	@PreAuthorize("hasAnyRole('ROLE_TENENT_ADMIN','ROLE_ACCOUNT_ADMIN')")
