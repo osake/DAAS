@@ -320,22 +320,23 @@ public class DaasClient implements IDaasClient, InitializingBean {
 		DaasClientUtil.validateArg(entityClassType, "Entity class type cannot be null");
 
 		try {
-			if (propertyMap == null || propertyMap.isEmpty()) {
-				return null;
-			}
+			
 			String url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityTypeName;
-
-			// create parameter map from propertyMap
-			Map<String, Collection<String>> parameters = new HashMap<String, Collection<String>>();
-			for (Iterator<String> iterator = propertyMap.keySet().iterator(); iterator.hasNext();) {
-				String key = iterator.next();
-				List<String> values = new ArrayList<String>();
-				values.add(propertyMap.get(key));
-				parameters.put(key, values);
+			Future<Response> f = null;
+			if (propertyMap != null && !propertyMap.isEmpty()) {
+				// create parameter map from propertyMap
+				Map<String, Collection<String>> parameters = new HashMap<String, Collection<String>>();
+				for (Iterator<String> iterator = propertyMap.keySet().iterator(); iterator.hasNext();) {
+					String key = iterator.next();
+					List<String> values = new ArrayList<String>();
+					values.add(propertyMap.get(key));
+					parameters.put(key, values);
+				}
+				f = buildRequest("get", url).setHeader("Content-Type", "application/json")
+						.setQueryParameters(new FluentStringsMap(parameters)).execute();
+			} else {
+				f = buildRequest("get", url).setHeader("Content-Type", "application/json").execute();
 			}
-
-			Future<Response> f = buildRequest("get", url).setHeader("Content-Type", "application/json")
-					.setQueryParameters(new FluentStringsMap(parameters)).execute();
 
 			Response r = f.get();
 
@@ -2010,7 +2011,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	public <T extends Entity> boolean deleteEntity(String UUID, String entityType, Class<T> entityClassType)
 			throws DaasClientException {
 		T entity = getEntityById(entityType, entityClassType, UUID);
-		return deleteEntityFullGraph(entity);
+		return deleteEntityFullGraph(entity, entityType);
 	}
 
 	/*
