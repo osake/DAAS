@@ -97,5 +97,14 @@ public interface IDaasTenantMgmtClient extends IDaasAccountMgmtClient {
 	 * @throws DaasClientException
 	 */
 	public DaasUser createAccountUser(String accName, DaasUser user) throws DaasClientException;
+	
+	/**
+	 * Returns the account admin user for this account 
+	 * 
+	 * @param accName
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public DaasUser getAccountUser(String accName) throws DaasClientException;
 
 }

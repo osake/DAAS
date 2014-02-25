@@ -217,11 +217,36 @@ public class DaasTenantMgmtClient extends DaasAccountMgmtClient implements IDaas
 	 */
 	@Override
 	public boolean isSuperAdmin() {
-		if (token != null && token.getAdditionalInformation() != null
-				&& token.getAdditionalInformation().get("isSuperAdmin") != null)
-			return (boolean) token.getAdditionalInformation().get("isSuperAdmin");
-
+		if (token != null && token.getAdditionalInformation() != null) {
+			Object isSuperAdmin = token.getAdditionalInformation().get("isSuperAdmin");
+			if(isSuperAdmin == null) {
+				return true;
+			}
+			else {
+				return (boolean) isSuperAdmin;
+			}
+		}
 		return false;
+	}
+
+
+	@Override
+	public DaasUser getAccountUser(String accName) throws DaasClientException {
+		try {
+			accName = URLEncoder.encode(accName, "UTF-8");
+			String url = baseURL + URLConstants.MANAGEMENT_CONTEXT
+					+ String.format(URLConstants.CREATE_ACCOUNT_USER, accName);
+			Future<Response> f = buildRequest("get", url).execute();
+			Response r = f.get();
+			if (!HttpStatusUtil.isSuccess(r))
+				throw new DaasClientException("Account user retrieval failed : " + r.getResponseBody());
+
+			DaasUser accountUser = gson.fromJson(r.getResponseBody(), DaasUser.class);
+			return accountUser;
+
+		} catch (Exception e) {
+			throw new DaasClientException(e);
+		}
 	}
 
 }

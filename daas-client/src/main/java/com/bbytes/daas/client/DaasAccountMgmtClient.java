@@ -210,4 +210,10 @@ public class DaasAccountMgmtClient extends DaasClient implements IDaasAccountMgm
 		}
 	}
 
+	@Override
+	public DaasUser getApplicationUser(String accName, String appName) throws DaasClientException {
+		//TODO : after implementation in server side
+		return null;
+	}
+
 }
