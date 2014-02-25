@@ -105,6 +105,6 @@ public interface IDaasTenantMgmtClient extends IDaasAccountMgmtClient {
 	 * @return
 	 * @throws DaasClientException
 	 */
-	public DaasUser getAccountUser(String accName) throws DaasClientException;
+	public List<DaasUser> getAccountUsers(String accName) throws DaasClientException;
 
 }
