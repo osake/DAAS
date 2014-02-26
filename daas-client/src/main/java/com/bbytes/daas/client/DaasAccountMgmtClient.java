@@ -6,6 +6,7 @@ import java.util.concurrent.Future;
 
 import com.bbytes.daas.domain.Application;
 import com.bbytes.daas.domain.DaasUser;
+import com.bbytes.daas.domain.Password;
 import com.google.gson.reflect.TypeToken;
 import com.ning.http.client.Response;
 
@@ -231,10 +232,14 @@ public class DaasAccountMgmtClient extends DaasClient implements IDaasAccountMgm
 		DaasClientUtil.validateArg(oldPassword, "OldPassword Name cannot be null or empty");
 		DaasClientUtil.validateArg(newPassword, "NewPassword Name cannot be null or empty");
 
-		String url = baseURL + URLConstants.MANAGEMENT_CONTEXT + "/accounts/" + accountName + "/user/" + userid
-				+ "/password/" + oldPassword + "/" + newPassword;
+		String url = baseURL + URLConstants.MANAGEMENT_CONTEXT + "/accounts/" + accountName + "/user/" + userid;
 		try {
-			Future<Response> f = buildRequest("get", url).execute();
+			Password password = new Password();
+			password.setOldPassword(oldPassword);
+			password.setNewPassword(newPassword);
+			
+			Future<Response> f = buildRequest("post", url).setBody(gson.toJson(password))
+					.setHeader("Content-Type", "application/json").execute();
 			Response r = f.get();
 			if (!HttpStatusUtil.isSuccess(r))
 				throw new DaasClientException("Could not fetch all applications : " + r.getResponseBody());

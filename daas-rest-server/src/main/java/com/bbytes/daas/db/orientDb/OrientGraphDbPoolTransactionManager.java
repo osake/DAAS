@@ -59,6 +59,7 @@ public class OrientGraphDbPoolTransactionManager extends AbstractPlatformTransac
 		GraphOrientTransactionObject txObject = (GraphOrientTransactionObject) transactionObject;
 
 		OrientGraph graphDb = orientDbTemplate.getDatabase();
+		graphDb.setAutoStartTx(true);
 
 		try {
 			txObject.setODatabaseRecordHolder(new ODatabaseHolder(graphDb));

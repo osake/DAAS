@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.bbytes.daas.domain.Account;
 import com.bbytes.daas.domain.Application;
 import com.bbytes.daas.domain.DaasUser;
+import com.bbytes.daas.domain.Password;
 import com.bbytes.daas.rest.DaasEntityNotFoundException;
 import com.bbytes.daas.rest.DaasException;
 import com.bbytes.daas.rest.DaasPersistentException;
@@ -141,16 +142,14 @@ public class ManagementController {
 		return userService.createAccountUser(accountName, user);
 	}
 
-	@RequestMapping(value = "/accounts/{accountName}/user/{id}/password/{oldPassword}/{newPassword}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/accounts/{accountName}/user/{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	boolean changePassword(@PathVariable("accountName") String accountName, @PathVariable("id") String userUuid,
-			@PathVariable("oldPassword") String oldPassword, @PathVariable("newPassword") String newPassword)
-			throws DaasException, DaasPersistentException {
-		boolean status = false;
+			@RequestBody Password passwordData) throws DaasException, DaasPersistentException {
 		try {
-			if (oldPassword == null || newPassword == null)
-				return status;
-			DaasUser updated = userService.updateUserPassword(oldPassword, newPassword, userUuid);
+			DaasUser updated = userService.updateUserPassword(passwordData.getOldPassword(),
+					passwordData.getNewPassword(), userUuid);
+			boolean status = false;
 			if (updated != null) {
 				status = true;
 			}
