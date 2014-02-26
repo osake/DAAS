@@ -16,7 +16,6 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.object.ODatabaseObject;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
@@ -118,7 +117,8 @@ public class OrientDbTemplate {
 	 */
 	public boolean dropDatabase(String databaseName) {
 		boolean success = connectionManager.dropDatabase(databaseName);
-		if (success && TenantRouter.getTenantIdentifier().equals(databaseName)) {
+		String tenantIdentifier = TenantRouter.getTenantIdentifier();
+		if (success && tenantIdentifier != null && tenantIdentifier.equals(databaseName)) {
 			clearThreadLocalDB();
 		}
 		return success;

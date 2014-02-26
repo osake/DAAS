@@ -1,11 +1,8 @@
 package com.bbytes.daas.rest.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -144,22 +141,21 @@ public class ManagementController {
 		return userService.createAccountUser(accountName, user);
 	}
 
-	@RequestMapping(value = "/accounts/{accountName}/user/{id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/accounts/{accountName}/user/{id}/password/{oldPassword}/{newPassword}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	String changePassword(@PathVariable("accountName") String accountName, @PathVariable("id") String userUuid,
-			@RequestBody String data) throws DaasException, DaasPersistentException {
-		JsonNode node = null;
+	boolean changePassword(@PathVariable("accountName") String accountName, @PathVariable("id") String userUuid,
+			@PathVariable("oldPassword") String oldPassword, @PathVariable("newPassword") String newPassword)
+			throws DaasException, DaasPersistentException {
+		boolean status = false;
 		try {
-			node = new ObjectMapper().readTree(data);
-			String oldPassword = node.get("oldPassword").getTextValue();
-			String newPassword = node.get("newPassword").getTextValue();
+			if (oldPassword == null || newPassword == null)
+				return status;
 			DaasUser updated = userService.updateUserPassword(oldPassword, newPassword, userUuid);
-			boolean status = false;
 			if (updated != null) {
 				status = true;
 			}
-			return "{\"status\" : " + status + " }";
-		} catch (IOException | DaasEntityNotFoundException e) {
+			return status;
+		} catch (DaasEntityNotFoundException e) {
 			throw new DaasPersistentException(e);
 		}
 	}

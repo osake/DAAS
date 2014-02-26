@@ -223,7 +223,7 @@ public class DaasAccountMgmtClient extends DaasClient implements IDaasAccountMgm
 	 * java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String changePassword(String accountName, String userid, String oldPassword, String newPassword)
+	public boolean changePassword(String accountName, String userid, String oldPassword, String newPassword)
 			throws DaasClientException {
 
 		DaasClientUtil.validateArg(accountName, "Account Name cannot be null or empty");
@@ -231,16 +231,15 @@ public class DaasAccountMgmtClient extends DaasClient implements IDaasAccountMgm
 		DaasClientUtil.validateArg(oldPassword, "OldPassword Name cannot be null or empty");
 		DaasClientUtil.validateArg(newPassword, "NewPassword Name cannot be null or empty");
 
-		String url = baseURL + URLConstants.MANAGEMENT_CONTEXT + "/accounts/" + accountName + "/user/" + userid;
+		String url = baseURL + URLConstants.MANAGEMENT_CONTEXT + "/accounts/" + accountName + "/user/" + userid
+				+ "/password/" + oldPassword + "/" + newPassword;
 		try {
-			String requestBody = " { oldPassword : " +oldPassword +", newPassword : " + newPassword + " }";   
-			Future<Response> f = buildRequest("post", url).setBody(requestBody)
-					.setHeader("Content-Type", "application/json").execute();
+			Future<Response> f = buildRequest("get", url).execute();
 			Response r = f.get();
 			if (!HttpStatusUtil.isSuccess(r))
 				throw new DaasClientException("Could not fetch all applications : " + r.getResponseBody());
 
-			String result = gson.fromJson(r.getResponseBody(), String.class);
+			boolean result = gson.fromJson(r.getResponseBody(), Boolean.class);
 			return result;
 
 		} catch (Exception e) {
