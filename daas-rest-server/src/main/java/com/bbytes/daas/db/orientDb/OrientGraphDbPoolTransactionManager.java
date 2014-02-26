@@ -59,7 +59,12 @@ public class OrientGraphDbPoolTransactionManager extends AbstractPlatformTransac
 		GraphOrientTransactionObject txObject = (GraphOrientTransactionObject) transactionObject;
 
 		OrientGraph graphDb = orientDbTemplate.getDatabase();
-		graphDb.setAutoStartTx(true);
+		
+		if (graphDb == null || graphDb.getRawGraph().getURL() == null || graphDb.isClosed()
+				|| graphDb.getRawGraph() == null || graphDb.getRawGraph().isClosed())
+			throw new IllegalStateException("The graph db is not yet opened");
+		
+		graphDb.setAutoStartTx(false);
 
 		try {
 			txObject.setODatabaseRecordHolder(new ODatabaseHolder(graphDb));
@@ -162,7 +167,7 @@ public class OrientGraphDbPoolTransactionManager extends AbstractPlatformTransac
 
 	protected void releaseDatabase(ODatabaseHolder holder) {
 
-		if (holder.getGraphDatabase() == null || holder.getGraphDatabase().isClosed())
+		if (holder.getGraphDatabase() == null || holder.getGraphDatabase().isClosed() || holder.getGraphDatabase().getRawGraph().isClosed())
 			return;
 
 		LOG.debug("Came into release db");
