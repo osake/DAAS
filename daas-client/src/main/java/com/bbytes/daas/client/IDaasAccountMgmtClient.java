@@ -20,12 +20,12 @@ import com.bbytes.daas.domain.DaasUser;
 
 /**
  * Daas accn mgmt client
- *
+ * 
  * @author Thanneer
- *
- * @version 
+ * 
+ * @version
  */
-public interface IDaasAccountMgmtClient extends IDaasClient{
+public interface IDaasAccountMgmtClient extends IDaasClient {
 
 	/**
 	 * Logs in to the DAAS Server as account admin
@@ -36,9 +36,19 @@ public interface IDaasAccountMgmtClient extends IDaasClient{
 	 * @return
 	 * @throws DaasClientException
 	 */
-	public boolean login(String accountName,String clientId, String clientSecret) throws DaasClientException;
+	public boolean login(String accountName, String clientId, String clientSecret) throws DaasClientException;
 
-
+	/**
+	 * Change user password 
+	 * @param accountName
+	 * @param userid
+	 * @param oldPassword
+	 * @param newPassword
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public String changePassword(String accountName, String userid, String oldPassword, String newPassword)
+			throws DaasClientException;
 
 	/**
 	 * Creates an application
@@ -78,7 +88,6 @@ public interface IDaasAccountMgmtClient extends IDaasClient{
 	 */
 	public Application getApplication(String accName, String appName) throws DaasClientException;
 
-	
 	/**
 	 * Creates an Application level user
 	 * 
@@ -89,7 +98,7 @@ public interface IDaasAccountMgmtClient extends IDaasClient{
 	 * @throws DaasClientException
 	 */
 	public DaasUser createApplicationUser(String accName, String appName, DaasUser user) throws DaasClientException;
-	
+
 	/**
 	 * @param accName
 	 * @param appName
