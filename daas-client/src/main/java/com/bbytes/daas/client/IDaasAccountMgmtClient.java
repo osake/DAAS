@@ -44,10 +44,10 @@ public interface IDaasAccountMgmtClient extends IDaasClient {
 	 * @param userid
 	 * @param oldPassword
 	 * @param newPassword
-	 * @return
+	 * @return true|false
 	 * @throws DaasClientException
 	 */
-	public String changePassword(String accountName, String userid, String oldPassword, String newPassword)
+	public boolean changePassword(String accountName, String userid, String oldPassword, String newPassword)
 			throws DaasClientException;
 
 	/**
