@@ -25,9 +25,11 @@ import com.bbytes.daas.annotation.RelationAnnotationProcessor;
 import com.bbytes.daas.domain.Entity;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSerializer;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClient.BoundRequestBuilder;
 import com.ning.http.client.AsyncHttpClientConfig;
@@ -90,6 +92,10 @@ public class DaasClient implements IDaasClient, InitializingBean {
 
 	protected ExecutorService executor;
 
+	protected Map<Class<?>, JsonDeserializer<?>> jsonClassToDeserializerMap = new HashMap<Class<?>, JsonDeserializer<?>>();
+
+	protected Map<Class<?>, JsonSerializer<?>> jsonClassToSerializerMap = new HashMap<Class<?>, JsonSerializer<?>>();
+
 	public DaasClient() {
 
 	}
@@ -117,12 +123,42 @@ public class DaasClient implements IDaasClient, InitializingBean {
 
 		// this gson object has special date convertor required for oriend db and has the logic to
 		// exclude the objects that are marked as @Relation
-		gson = new GsonBuilder().registerTypeAdapter(Date.class, SerializerUtil.getSerializerForDate())
-				.registerTypeAdapter(Date.class, SerializerUtil.getDeSerializerForDate())
-				.setExclusionStrategies(new RelationAnnotationExclStrat()).create();
+		rebuildGson();
 
 		executor = Executors.newCachedThreadPool();
 
+	}
+
+	public void registerJSONSerializer(Class<?> type, JsonSerializer<?> serializer) {
+		jsonClassToSerializerMap.put(type, serializer);
+		rebuildGson();
+	}
+
+	public void registerJSONDeSerializer(Class<?> type, JsonDeserializer<?> deserializer) {
+		jsonClassToDeserializerMap.put(type, deserializer);
+		rebuildGson();
+	}
+
+	/**
+	 * 
+	 */
+	private void rebuildGson() {
+		GsonBuilder gsonBuilder = new GsonBuilder()
+				.registerTypeAdapter(Date.class, SerializerUtil.getSerializerForDate())
+				.registerTypeAdapter(Date.class, SerializerUtil.getDeSerializerForDate())
+				.setExclusionStrategies(new RelationAnnotationExclStrat());
+
+		for (Class<?> clazz : jsonClassToSerializerMap.keySet()) {
+			JsonSerializer<?> serializer = jsonClassToSerializerMap.get(clazz);
+			gsonBuilder.registerTypeAdapter(clazz, serializer);
+		}
+
+		for (Class<?> clazz : jsonClassToDeserializerMap.keySet()) {
+			JsonDeserializer<?> deserializer = jsonClassToDeserializerMap.get(clazz);
+			gsonBuilder.registerTypeAdapter(clazz, deserializer);
+		}
+
+		gson = gsonBuilder.create();
 	}
 
 	/**
@@ -320,7 +356,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 		DaasClientUtil.validateArg(entityClassType, "Entity class type cannot be null");
 
 		try {
-			
+
 			String url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityTypeName;
 			Future<Response> f = null;
 			if (propertyMap != null && !propertyMap.isEmpty()) {
