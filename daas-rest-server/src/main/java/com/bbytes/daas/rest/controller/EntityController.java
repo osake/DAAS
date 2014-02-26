@@ -113,8 +113,21 @@ public class EntityController {
 			@PathVariable String entityType, @RequestParam String propertyName, @RequestParam String propertyDataType,
 			@RequestParam(required=false) String startRange, @RequestParam(required=false) String endRange, HttpServletRequest request) throws DaasException {
 		List<ODocument> documents = null;
-		documents = documentDao.findByPropertyRange(applicationName, entityType, propertyName, DataType.getForLabel(propertyDataType),
-				startRange, endRange);
+		/*
+		 * The below code should be uncommented and used if the database version is less than 1.7.
+		 * Method call using findByPropertyRangeV7 should be commented then
+		 */
+		
+		// documents = documentDao.findByPropertyRange(applicationName, entityType, propertyName,
+		// DataType.getForLabel(propertyDataType),
+		// startRange, endRange);
+		
+		/*
+		 * The below code should be commented and used if the database version is 1.7
+		 */
+		documents = documentDao.findByPropertyRangeV7(applicationName, entityType, propertyName,
+				DataType.getForLabel(propertyDataType), startRange, endRange);
+
 		return OJSONWriter.listToJSON(documents, null);
 	}
 

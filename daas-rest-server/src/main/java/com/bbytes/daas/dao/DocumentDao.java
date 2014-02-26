@@ -78,8 +78,36 @@ public interface DocumentDao {
 	
 	public List<ODocument> findByProperty(String applicationName, String entityType, String propertyName, String propertyValue) throws DaasEntityNotFoundException;
 
+	/**
+	 * Use {@link #findByPropertyRangeV7(String, String, String, DataType, String, String)} for Orient DB 1.7
+	 * @param applicationName
+	 * @param entityType
+	 * @param propertyName
+	 * @param propertyDataType
+	 * @param startRange
+	 * @param endRange
+	 * @return
+	 * @throws DaasEntityNotFoundException
+	 */
+	@Deprecated
 	public List<ODocument> findByPropertyRange(String applicationName, String entityType, String propertyName,
 			DataType propertyDataType, String startRange, String endRange) throws DaasEntityNotFoundException;
+	
+	
+	/**
+	 * Finds the {@link ODocument} by a property range. This API will work against OrientDB 1.7
+	 * @param applicationName
+	 * @param entityType
+	 * @param propertyName
+	 * @param propertyDataType
+	 * @param startRange
+	 * @param endRange
+	 * @return
+	 * @throws DaasEntityNotFoundException
+	 */
+	public List<ODocument> findByPropertyRangeV7(String applicationName, String entityType, String propertyName,
+			DataType propertyDataType, String startRange, String endRange) throws DaasEntityNotFoundException;
+	
 			
 	public List<ODocument> list(String entityType, String appName) throws DaasPersistentException;
 
