@@ -58,14 +58,6 @@ import com.ning.http.client.Response;
  * 
  * @version 0.0.1
  */
-
-/**
- * 
- * 
- * @author Thanneer
- * 
- * @version
- */
 public class DaasClient implements IDaasClient, InitializingBean {
 
 	protected String clientId;
@@ -888,20 +880,21 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	 * 
 	 * @param entity
 	 *            Denotes entity A
+	 * @param entityType Denotes the table name of entity A
 	 * @param relation
 	 *            Relationship name
-	 * @param entitytype
-	 *            table name
 	 * @param expectedClassType
 	 *            mention the class type expected for entity B
+	 * @param entitytype
+	 *            table name of entity B
 	 * @return List of entities of type B
 	 * @throws DaasClientException
 	 */
-	private <T extends Entity> List<T> getRightSideRelatedEntitiesWithGraph(Entity entity, String relation,
-			String entityType, Class<?> expectedClassType) throws DaasClientException {
+	private <T extends Entity> List<T> getRightSideRelatedEntitiesWithGraph(Entity entity, String entityType,
+			String relation, String expectedEntityType, Class<?> expectedClassType) throws DaasClientException {
 		try {
-			String url = baseURL + "/" + accountName + "/" + applicationName + "/" + entity.getClass().getSimpleName()
-					+ "/" + entity.getUuid() + "/" + relation + "/" + entityType;
+			String url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityType
+					+ "/" + entity.getUuid() + "/" + relation + "/" + expectedEntityType;
 
 			Future<Response> f = buildRequest("get", url).setHeader("Content-Type", "application/json").execute();
 
@@ -943,8 +936,8 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	 */
 	private <T extends Entity> List<T> getRightSideRelatedEntitiesWithGraph(Entity entity, String relation,
 			Class<?> expectedClassType) throws DaasClientException {
-		return getRightSideRelatedEntitiesWithGraph(entity, relation, expectedClassType.getSimpleName(),
-				expectedClassType);
+		return getRightSideRelatedEntitiesWithGraph(entity, entity.getClass().getSimpleName(), relation,
+				expectedClassType.getSimpleName(), expectedClassType);
 
 	}
 
@@ -965,7 +958,7 @@ public class DaasClient implements IDaasClient, InitializingBean {
 	 */
 	public <T extends Entity> List<T> getRightSideRelatedEntities(Entity entity, String relation, String entityType,
 			Class<?> expectedClassType) throws DaasClientException {
-		return getRightSideRelatedEntitiesWithGraph(entity, relation, entityType, expectedClassType);
+		return getRightSideRelatedEntitiesWithGraph(entity, entity.getClass().getSimpleName(), relation, entityType, expectedClassType);
 	}
 
 	/*
@@ -1042,6 +1035,52 @@ public class DaasClient implements IDaasClient, InitializingBean {
 
 	}
 
+
+	@Override
+	public <T extends Entity> List<T> getLeftSideRelatedEntitiesWithOutGraph(Entity entity, String entityTypeName,
+			String relation, String expectedEntityTypeName, Class<?> expectedClassType) throws DaasClientException {
+		try {
+			String url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityTypeName
+					+ "/" + entity.getUuid() + "/connecting/" + relation + "/" + expectedEntityTypeName;
+
+			Future<Response> f = buildRequest("get", url).setHeader("Content-Type", "application/json").execute();
+
+			Response r = f.get();
+
+			DaasClientUtil.checkResponse(r);
+
+			@SuppressWarnings("unchecked")
+			T[] result = (T[]) gson.fromJson(r.getResponseBody(), Array.newInstance(expectedClassType, 0).getClass());
+
+			return Arrays.asList(result);
+
+		} catch (Exception e) {
+			throw new DaasClientException(e);
+		}
+
+	}
+
+	@Override
+	public <T extends Entity> void getLeftSideRelatedEntitiesWithOutGraph(final Entity entity, final String entityTypeName,
+			final String relation, final String expectedEntityTypeName, final Class<?> expectedClassType,
+			AsyncResultHandler<List<T>> asyncResultHandler) {
+		if (asyncResultHandler == null)
+			return;
+
+		Callable<List<T>> getLeftSideRelatedEntitiesWithOutGraph = new Callable<List<T>>() {
+			@Override
+			public List<T> call() throws Exception {
+				List<T> result = getLeftSideRelatedEntitiesWithOutGraph(entity, entityTypeName, relation, expectedEntityTypeName, expectedClassType);
+				return result;
+			}
+		};
+
+		DaasClientCallAsyncTask<List<T>> asyncTask = new DaasClientCallAsyncTask<List<T>>(
+				getLeftSideRelatedEntitiesWithOutGraph, asyncResultHandler);
+		executor.submit(asyncTask);
+		
+	}
+	
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
 	 * ---relation----> B then return all A entities that has the given relationship name.This
@@ -1160,6 +1199,61 @@ public class DaasClient implements IDaasClient, InitializingBean {
 
 	}
 
+	@Override
+	public <T extends Entity> List<T> getLeftSideRelatedEntitiesWithGraph(Entity entity, String entityTypeName,
+			String relation, String expectedEntityTypeName, Class<?> expectedClassType) throws DaasClientException {
+		try {
+			String url = baseURL + "/" + accountName + "/" + applicationName + "/" + entityTypeName
+					+ "/" + entity.getUuid() + "/connecting/" + relation + "/" + expectedEntityTypeName;
+
+			Future<Response> f = buildRequest("get", url).setHeader("Content-Type", "application/json").execute();
+
+			Response r = f.get();
+
+			DaasClientUtil.checkResponse(r);
+
+			@SuppressWarnings("unchecked")
+			T[] result = (T[]) gson.fromJson(r.getResponseBody(), Array.newInstance(expectedClassType, 0).getClass());
+
+			// load the relation member field and return. The graph loading logic
+			List<T> resultList = Arrays.asList(result);
+			List<T> resultListWithRelationLoaded = new ArrayList<>();
+			for (T t : resultList) {
+				t = loadRelation(t);
+				resultListWithRelationLoaded.add(t);
+			}
+
+			return resultListWithRelationLoaded;
+
+		} catch (Exception e) {
+			throw new DaasClientException(e);
+		}
+
+	}
+
+	@Override
+	public <T extends Entity> void getLeftSideRelatedEntitiesWithGraph(final Entity entity, final String entityTypeName,
+			final String relation, final String expectedEntityTypeName, final Class<?> expectedClassType,
+			AsyncResultHandler<List<T>> asyncResultHandler) {
+		if (asyncResultHandler == null)
+			return;
+
+		Callable<List<T>> getLeftSideRelatedEntitiesWithGraph = new Callable<List<T>>() {
+			@Override
+			public List<T> call() throws Exception {
+				List<T> result = getLeftSideRelatedEntitiesWithGraph(entity, entityTypeName, relation, expectedEntityTypeName, expectedClassType);
+				return result;
+			}
+		};
+
+		DaasClientCallAsyncTask<List<T>> asyncTask = new DaasClientCallAsyncTask<List<T>>(
+				getLeftSideRelatedEntitiesWithGraph, asyncResultHandler);
+		executor.submit(asyncTask);
+		
+	}
+
+	
+	
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
 	 * ---relation----> B then return all A entities that has the given relationship name.
@@ -2288,6 +2382,58 @@ public class DaasClient implements IDaasClient, InitializingBean {
 				.registerTypeAdapter(Date.class, SerializerUtil.getDeSerializerForDate())
 				.setExclusionStrategies(new RelationAnnotationExclStrat()).create();
 		executor = Executors.newCachedThreadPool();
+	}
+
+	@Override
+	public <T extends Entity> List<T> getRightSideRelatedEntities(Entity entity, String entityTypeName,
+			String relation, String expectedEntityTypeName, Class<?> expectedClassType) throws DaasClientException {
+		return getRightSideRelatedEntitiesWithGraph(entity, entityTypeName, relation, expectedEntityTypeName, expectedClassType);
+	}
+
+	@Override
+	public <T extends Entity> void getRightSideRelatedEntities(final Entity entity, final String entityTypeName, final String relation,
+			final String expectedEntityTypeName, final Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler) {
+		if (asyncResultHandler == null)
+			return;
+
+		Callable<List<T>> getRightSideRelatedEntities = new Callable<List<T>>() {
+			@Override
+			public List<T> call() throws Exception {
+				List<T> result = getRightSideRelatedEntities(entity, entityTypeName, relation, expectedEntityTypeName, expectedClassType);
+				return result;
+			}
+		};
+
+		DaasClientCallAsyncTask<List<T>> asyncTask = new DaasClientCallAsyncTask<List<T>>(getRightSideRelatedEntities,
+				asyncResultHandler);
+		executor.submit(asyncTask);
+		
+	}
+
+	@Override
+	public <T extends Entity> List<T> getLeftSideRelatedEntities(Entity entity, String entityTypeName, String relation,
+			String expectedEntityTypeName, Class<?> expectedClassType) throws DaasClientException {
+		return getLeftSideRelatedEntitiesWithGraph(entity, entityTypeName, relation, expectedEntityTypeName, expectedClassType);
+	}
+
+	@Override
+	public <T extends Entity> void getLeftSideRelatedEntities(final Entity entity, final String entityTypeName, final String relation,
+			final String expectedEntityTypeName, final Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler) {
+		if (asyncResultHandler == null)
+			return;
+
+		Callable<List<T>> getRightSideRelatedEntities = new Callable<List<T>>() {
+			@Override
+			public List<T> call() throws Exception {
+				List<T> result = getLeftSideRelatedEntities(entity, entityTypeName, relation, expectedEntityTypeName, expectedClassType);
+				return result;
+			}
+		};
+
+		DaasClientCallAsyncTask<List<T>> asyncTask = new DaasClientCallAsyncTask<List<T>>(getRightSideRelatedEntities,
+				asyncResultHandler);
+		executor.submit(asyncTask);
+		
 	}
 
 }

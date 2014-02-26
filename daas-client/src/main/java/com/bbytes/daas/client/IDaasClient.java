@@ -686,14 +686,31 @@ public interface IDaasClient {
 	 *            Denotes entity A
 	 * @param relation
 	 *            Relationship name
-	 * @param entityTypeName
+	 * @param expectedEntityTypeName
 	 *            table name
 	 * @param expectedClassType
 	 *            mention the class type expected for entity B
 	 * @return List of entities of type B
 	 */
 	public <T extends Entity> List<T> getRightSideRelatedEntities(Entity entity, String relation,
-			String entityTypeName, Class<?> expectedClassType) throws DaasClientException;;
+			String expectedEntityTypeName, Class<?> expectedClassType) throws DaasClientException;;
+
+	/**
+	 * This will return all right side entities in a relationship . The object mapping looks like :
+	 * A ---relation----> B then return all B entities that has the given relationship name.
+	 * 
+	 * @param entity
+	 *            Denotes entity A
+	 * @param relation
+	 *            Relationship name
+	 * @param expectedEntityTypeName
+	 *            table name
+	 * @param expectedClassType
+	 *            mention the class type expected for entity B
+	 * @return List of entities of type B
+	 */
+	public <T extends Entity> void getRightSideRelatedEntities(Entity entity, String relation,
+			String expectedEntityTypeName, Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * This will return all right side entities in a relationship . The object mapping looks like :
@@ -702,16 +719,40 @@ public interface IDaasClient {
 	 * 
 	 * @param entity
 	 *            Denotes entity A
+	 * @param entityTypeName
+	 *            - denotes table of entity A
 	 * @param relation
 	 *            Relationship name
+	 * @param expectedEntityTypeName
+	 *            table name pf entity B
+	 * @param expectedClassType
+	 *            mention the class type expected for entity B
+	 * @return List of entities of type B
+	 * 
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> List<T> getRightSideRelatedEntities(Entity entity, String entityTypeName,
+			String relation, String expectedEntityTypeName, Class<?> expectedClassType) throws DaasClientException;;
+
+	/**
+	 * This will return all right side entities in a relationship . The object mapping looks like :
+	 * A ---relation----> B then return all B entities that has the given relationship name.Async
+	 * version
+	 * 
+	 * @param entity
+	 *            Denotes entity A
 	 * @param entityTypeName
-	 *            table name
+	 *            - denotes table of entity A
+	 * @param relation
+	 *            Relationship name
+	 * @param expectedEntityTypeName
+	 *            table name pf entity B
 	 * @param expectedClassType
 	 *            mention the class type expected for entity B
 	 * @return List of entities of type B
 	 */
-	public <T extends Entity> void getRightSideRelatedEntities(Entity entity, String relation, String entityTypeName,
-			Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
+	public <T extends Entity> void getRightSideRelatedEntities(Entity entity, String entityTypeName, String relation,
+			String expectedEntityTypeName, Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * This will return all right side entities in a relationship . The object mapping looks like :
@@ -790,6 +831,52 @@ public interface IDaasClient {
 	 * 
 	 * @param entity
 	 *            Denotes entity B
+	 * @param entityTypeName
+	 *            table name of B
+	 * @param relation
+	 *            Relationship name
+	 * @param entityTypeName
+	 *            table name
+	 * @param expectedClassType
+	 *            mention the class type expected for entity A
+	 * @param expectedEntityTypeName
+	 *            table name of A
+	 * @return List of entities of type A
+	 */
+	public <T extends Entity> List<T> getLeftSideRelatedEntitiesWithOutGraph(Entity entity, String entityTypeName,
+			String relation, String expectedEntityTypeName, Class<?> expectedClassType) throws DaasClientException;
+
+	/**
+	 * This will return all left side entities in a relationship . The object mapping looks like : A
+	 * ---relation----> B then return all A entities that has the given relationship name.This
+	 * method does not load the member field, just fetches the main entities.Async version.Async
+	 * version
+	 * 
+	 * @param entity
+	 *            Denotes entity B
+	 * @param entityTypeName
+	 *            table name of B
+	 * @param relation
+	 *            Relationship name
+	 * @param entityTypeName
+	 *            table name
+	 * @param expectedClassType
+	 *            mention the class type expected for entity A
+	 * @param expectedEntityTypeName
+	 *            table name of A
+	 * @return List of entities of type A
+	 */
+	public <T extends Entity> void getLeftSideRelatedEntitiesWithOutGraph(Entity entity, String entityTypeName,
+			String relation, String expectedEntityTypeName, Class<?> expectedClassType,
+			AsyncResultHandler<List<T>> asyncResultHandler);
+
+	/**
+	 * This will return all left side entities in a relationship . The object mapping looks like : A
+	 * ---relation----> B then return all A entities that has the given relationship name.This
+	 * method does not load the member field, just fetches the main entities
+	 * 
+	 * @param entity
+	 *            Denotes entity B
 	 * @param relation
 	 *            Relationship name
 	 * @param expectedClassType
@@ -852,6 +939,50 @@ public interface IDaasClient {
 	public <T extends Entity> void getLeftSideRelatedEntitiesWithGraph(Entity entity, String relation,
 			String entityTypeName, Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
+	
+	/**
+	 * This will return all left side entities in a relationship . The object mapping looks like : A
+	 * ---relation----> B then return all A entities that has the given relationship name.
+	 * @param entity
+	 *            Denotes entity B
+	 * @param entityTypeName
+	 *            table name of B
+	 * @param relation
+	 *            Relationship name
+	 * @param entityTypeName
+	 *            table name
+	 * @param expectedClassType
+	 *            mention the class type expected for entity A
+	 * @param expectedEntityTypeName
+	 *            table name of A
+	 * @return List of entities of type A
+	 */
+	public <T extends Entity> List<T> getLeftSideRelatedEntitiesWithGraph(Entity entity, String entityTypeName,
+			String relation, String expectedEntityTypeName, Class<?> expectedClassType) throws DaasClientException;
+
+	/**
+	 * This will return all left side entities in a relationship . The object mapping looks like : A
+	 * ---relation----> B then return all A entities that has the given relationship name. Async version.Async
+	 * version
+	 * 
+	 * @param entity
+	 *            Denotes entity B
+	 * @param entityTypeName
+	 *            table name of B
+	 * @param relation
+	 *            Relationship name
+	 * @param entityTypeName
+	 *            table name
+	 * @param expectedClassType
+	 *            mention the class type expected for entity A
+	 * @param expectedEntityTypeName
+	 *            table name of A
+	 * @return List of entities of type A
+	 */
+	public <T extends Entity> void getLeftSideRelatedEntitiesWithGraph(Entity entity, String entityTypeName,
+			String relation, String expectedEntityTypeName, Class<?> expectedClassType,
+			AsyncResultHandler<List<T>> asyncResultHandler);
+	
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
 	 * ---relation----> B then return all A entities that has the given relationship name.
@@ -924,15 +1055,15 @@ public interface IDaasClient {
 	 *            Denotes entity B
 	 * @param relation
 	 *            Relationship name
-	 * @param entityTypeName
+	 * @param expectedEntityTypeName
 	 *            table name
 	 * @param expectedClassType
 	 *            mention the class type expected for entity A
 	 * @return List of entities of type A
 	 * @throws DaasClientException
 	 */
-	public <T extends Entity> List<T> getLeftSideRelatedEntities(Entity entity, String relation, String entityTypeName,
-			Class<?> expectedClassType) throws DaasClientException;
+	public <T extends Entity> List<T> getLeftSideRelatedEntities(Entity entity, String relation,
+			String expectedEntityTypeName, Class<?> expectedClassType) throws DaasClientException;
 
 	/**
 	 * This will return all left side entities in a relationship . The object mapping looks like : A
@@ -951,6 +1082,47 @@ public interface IDaasClient {
 	 */
 	public <T extends Entity> void getLeftSideRelatedEntities(Entity entity, String relation, String entityTypeName,
 			Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
+
+	/**
+	 * This will return all left side entities in a relationship . The object mapping looks like : A
+	 * ---relation----> B then return all A entities that has the given relationship name.
+	 * 
+	 * @param entity
+	 *            Denotes entity B
+	 * @param entityType
+	 *            denotes entity type of B
+	 * 
+	 * @param relation
+	 *            Relationship name
+	 * @param expectedEntityTypeName
+	 *            table name
+	 * @param expectedClassType
+	 *            mention the class type expected for entity A
+	 * @return List of entities of type A
+	 * @throws DaasClientException
+	 */
+	public <T extends Entity> List<T> getLeftSideRelatedEntities(Entity entity, String entityType, String relation,
+			String expectedEntityTypeName, Class<?> expectedClassType) throws DaasClientException;
+
+	/**
+	 * This will return all left side entities in a relationship . The object mapping looks like : A
+	 * ---relation----> B then return all A entities that has the given relationship name.Async
+	 * version
+	 * 
+	 * @param entity
+	 *            Denotes entity B
+	 * @param entityTypeName
+	 *            denotes entity type of B
+	 * @param relation
+	 *            Relationship name
+	 * @param expectedEntityTypeName
+	 *            table name
+	 * @param expectedClassType
+	 *            mention the class type expected for entity A
+	 * @return List of entities of type A
+	 */
+	public <T extends Entity> void getLeftSideRelatedEntities(Entity entity, String entityTypeName, String relation,
+			String expectedEntityTypeName, Class<?> expectedClassType, AsyncResultHandler<List<T>> asyncResultHandler);
 
 	/**
 	 * Close Daas client and free resources
