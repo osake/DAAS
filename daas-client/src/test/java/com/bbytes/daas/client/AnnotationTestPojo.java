@@ -14,6 +14,7 @@
 package com.bbytes.daas.client;
 
 import java.util.Date;
+import java.util.List;
 
 import com.bbytes.daas.annotation.CascadeType;
 import com.bbytes.daas.annotation.Relation;
@@ -54,6 +55,11 @@ public class AnnotationTestPojo extends Entity {
 	@Relation(name="testPojoRelatedUpdate" , lazy=false,cascadeTypes={
 	        CascadeType.UPDATE })
 	private TestPojoRelated testPojoRelatedUpdate;
+	
+	
+	@Relation(name="oneToMany", lazy=true)
+	private TestPojo oneToMany;
+	
 
 	public AnnotationTestPojo() {
 		field1Related = "todays date " + new Date();
@@ -156,6 +162,20 @@ public class AnnotationTestPojo extends Entity {
 	 */
 	public void setTestPojoRelatedUpdate(TestPojoRelated testPojoRelatedUpdate) {
 		this.testPojoRelatedUpdate = testPojoRelatedUpdate;
+	}
+
+	/**
+	 * @return the oneToMany
+	 */
+	public TestPojo getOneToMany() {
+		return oneToMany;
+	}
+
+	/**
+	 * @param oneToMany the oneToMany to set
+	 */
+	public void setOneToMany(TestPojo oneToMany) {
+		this.oneToMany = oneToMany;
 	}
 
 	

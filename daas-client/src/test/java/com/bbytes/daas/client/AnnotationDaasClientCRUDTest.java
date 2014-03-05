@@ -13,6 +13,11 @@
  */
 package com.bbytes.daas.client;
 
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,6 +25,7 @@ import org.junit.Test;
 
 import com.bbytes.daas.domain.Application;
 import com.bbytes.daas.domain.DaasUser;
+import com.bbytes.daas.domain.Entity;
 
 /**
  * 
@@ -133,6 +139,42 @@ public class AnnotationDaasClientCRUDTest extends DaasClientBaseTest {
 
 	}
 
+	@Test
+	public void daasClientAnnotationOneToMany() throws DaasClientException {
+		DaasClient daasClient = new DaasClient(host, port);
+		boolean success = daasClient.login("testAccn", "testApp", "accnUser", "accnPassword");
+		Assert.assertTrue(success);
+		annotationTestPojo = new AnnotationTestPojo();
+		// first create the entity so that later on it can be updated
+		annotationTestPojo = daasClient.createEntity(annotationTestPojo);
+		TestPojo oneToMany1 = new TestPojo();
+		TestPojo oneToMany2 = new TestPojo();
+//		TestPojo oneToMany3 = new TestPojo();
+//		TestPojo oneToMany4 = new TestPojo();
+//		TestPojo oneToMany5 = new TestPojo();
+//		TestPojo oneToMany6 = new TestPojo();
+		
+		annotationTestPojo.setOneToMany(oneToMany1);
+		annotationTestPojo = daasClient.updateEntity(annotationTestPojo);
+		annotationTestPojo.setOneToMany(oneToMany2);
+		annotationTestPojo = daasClient.updateEntity(annotationTestPojo);
+		
+		annotationTestPojo =daasClient.loadLazyRelation(annotationTestPojo);
+		
+//		oneToMany.add(oneToMany3);
+//		oneToMany.add(oneToMany4);
+//		oneToMany.add(oneToMany5);
+//		oneToMany.add(oneToMany6);
+		
+		
+		List<TestPojo> oneToMany = daasClient.getRightSideRelatedEntities(annotationTestPojo, "REL_oneToMany", TestPojo.class);
+		assertNotNull(oneToMany);
+		assertNotNull(annotationTestPojo.getOneToMany());
+		
+		
+	}
+	
+	
 	@Test
 	public void daasClientAnnotationDeleteTest() throws DaasClientException {
 

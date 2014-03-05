@@ -2089,7 +2089,8 @@ public class DaasClient implements IDaasClient, InitializingBean {
 				T toBeRelatedEntity = relationToEntity.get(relation);
 				toBeRelatedEntityField.set(entity, toBeRelatedEntity);
 
-				boolean success = addRelation(entity, toBeRelatedEntity, relation);
+//				boolean success = addRelation(entity, toBeRelatedEntity, relation);
+				boolean success = addRelation(entity, enityType, toBeRelatedEntity, toBeRelatedEntity.getClass().getSimpleName(), relation);
 				if (!success)
 					throw new DaasClientException("Failed while creating relation between entities of type "
 							+ enityType + " and " + toBeRelatedEntity.getClass().getSimpleName() + " with ids "
