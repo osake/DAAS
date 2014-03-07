@@ -60,12 +60,6 @@ public class OrientGraphDbPoolTransactionManager extends AbstractPlatformTransac
 
 		OrientGraph graphDb = orientDbTemplate.getDatabase();
 		
-		if (graphDb == null || graphDb.getRawGraph().getURL() == null || graphDb.isClosed()
-				|| graphDb.getRawGraph() == null || graphDb.getRawGraph().isClosed())
-			throw new IllegalStateException("The graph db is not yet opened");
-		
-		graphDb.setAutoStartTx(false);
-
 		try {
 			txObject.setODatabaseRecordHolder(new ODatabaseHolder(graphDb));
 
