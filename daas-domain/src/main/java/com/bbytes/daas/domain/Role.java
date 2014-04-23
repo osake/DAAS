@@ -24,10 +24,8 @@ package com.bbytes.daas.domain;
  */
 public class Role extends Entity{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 5164891492488139181L;
+	
 	public static final String ROLE_TENENT_ADMIN= "ROLE_TENENT_ADMIN";
 	public static final String ROLE_ACCOUNT_ADMIN= "ROLE_ACCOUNT_ADMIN";
 	public static final String ROLE_APPLICATION_USER= "ROLE_APPLICATION_USER";
