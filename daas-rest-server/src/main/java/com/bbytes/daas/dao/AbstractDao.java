@@ -62,24 +62,19 @@ public class AbstractDao<E extends Entity> extends OrientDbDaoSupport implements
 	@Override
 	public E save(E entity) throws DaasPersistentException {
 		OObjectDatabaseTx dbTx = (OObjectDatabaseTx) getObjectDatabase();
-		dbTx.begin();
 		entity.setUuid(UUID.randomUUID().toString());
 		entity.setCreationDate(new Date());
 		entity.setModificationDate(new Date());
 		E e = dbTx.save(entity);
-		dbTx.commit();
 		return detach(e, dbTx);
 	}
 
 	@Override
 	public E update(E entity) throws DaasPersistentException {
 		OObjectDatabaseTx dbTx = (OObjectDatabaseTx) getObjectDatabase();
-		dbTx.begin();
 		entity.setModificationDate(new Date());
 		E e = dbTx.save(entity);
-		dbTx.commit();
 		return detach(e, dbTx);
-
 	}
 
 	@Override
