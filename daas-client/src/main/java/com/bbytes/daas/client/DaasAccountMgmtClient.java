@@ -98,6 +98,30 @@ public class DaasAccountMgmtClient extends DaasClient implements IDaasAccountMgm
 			throw new DaasClientException(e);
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see com.bbytes.daas.client.IDaasAccountMgmtClient#updateApplication(com.bbytes.daas.domain.Application)
+	 */
+	@Override
+	public Application updateApplication(Application application) throws DaasClientException {
+		try {
+			String appName = URLEncoder.encode(application.getName(), "UTF-8");
+			String accName = URLEncoder.encode(application.getAccountName(), "UTF-8");
+			String url = baseURL + URLConstants.MANAGEMENT_CONTEXT
+					+ String.format(URLConstants.CREATE_DELETE_APPLICATION, accName, appName);
+			Future<Response> f = buildRequest("put", url).setBody(gson.toJson(application))
+					.setHeader("Content-Type", "application/json").execute();
+			Response r = f.get();
+			if (!HttpStatusUtil.isSuccess(r))
+				throw new DaasClientException("Application update failed : " + r.getResponseBody());
+
+			application = gson.fromJson(r.getResponseBody(), Application.class);
+			return application;
+
+		} catch (Exception e) {
+			throw new DaasClientException(e);
+		}
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -251,5 +275,7 @@ public class DaasAccountMgmtClient extends DaasClient implements IDaasAccountMgm
 			throw new DaasClientException(e);
 		}
 	}
+
+	
 
 }

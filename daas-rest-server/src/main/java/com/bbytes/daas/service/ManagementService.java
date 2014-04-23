@@ -59,6 +59,9 @@ public interface ManagementService {
 	public Application createApplication(String accountName, String applicationName, String applicationType, String applicationSubType, String applicationFullName) throws DaasPersistentException;
 	
 	@PreAuthorize("hasAnyRole('ROLE_TENENT_ADMIN','ROLE_ACCOUNT_ADMIN')")
+	public Application updateApplication(String accountName, String applicationName, String applicationType, String applicationSubType, String applicationFullName) throws DaasPersistentException;
+	
+	@PreAuthorize("hasAnyRole('ROLE_TENENT_ADMIN','ROLE_ACCOUNT_ADMIN')")
 	public Application editApplication(String accountName, String applicationName, String applicationType, String applicationSubType, String applicationFullName) throws DaasPersistentException;
 	
 	@PreAuthorize("hasAnyRole('ROLE_TENENT_ADMIN','ROLE_ACCOUNT_ADMIN')")

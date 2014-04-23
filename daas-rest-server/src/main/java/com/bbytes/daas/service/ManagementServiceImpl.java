@@ -107,8 +107,14 @@ public class ManagementServiceImpl implements ManagementService {
 		return applicationDao.save(app);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.service.ManagementService#updateApplication(java.lang.String,
+	 * java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
 	@Override
-	public Application editApplication(String accountName, String applicationName, String applicationType,
+	public Application updateApplication(String accountName, String applicationName, String applicationType,
 			String applicationSubType, String applicationFullName) throws DaasPersistentException {
 		List<Application> apps;
 		try {
@@ -125,6 +131,15 @@ public class ManagementServiceImpl implements ManagementService {
 			throw new DaasPersistentException(e);
 		}
 		return null;
+	}
+
+	/**
+	 * Update and edit both same
+	 */
+	@Override
+	public Application editApplication(String accountName, String applicationName, String applicationType,
+			String applicationSubType, String applicationFullName) throws DaasPersistentException {
+		return updateApplication(accountName, applicationName, applicationType, applicationSubType, applicationFullName);
 	}
 
 	/*

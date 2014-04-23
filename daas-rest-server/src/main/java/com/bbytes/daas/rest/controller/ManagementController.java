@@ -206,6 +206,30 @@ public class ManagementController {
 	}
 
 	/**
+	 * Update App inside account
+	 * 
+	 * @param accountName
+	 * @param applicationName
+	 * @param application
+	 *            TODO
+	 * @return
+	 * @throws DaasException
+	 * @throws DaasPersistentException
+	 */
+	@RequestMapping(value = "/accounts/{accountName}/applications/{applicationName}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Application updateApplication(@PathVariable String accountName,
+			@PathVariable("applicationName") String applicationName, @RequestBody Application application)
+			throws DaasException, DaasPersistentException {
+		if (application == null)
+			throw new DaasPersistentException("Application cannot be null");
+
+		return managementService.updateApplication(accountName, applicationName, application.getApplicationType(),
+				application.getApplicationSubType(), application.getFullName());
+
+	}
+
+	/**
 	 * Edits the application type and subtype
 	 * 
 	 * @param accountName

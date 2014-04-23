@@ -58,6 +58,15 @@ public interface IDaasAccountMgmtClient extends IDaasClient {
 	 * @throws DaasClientException
 	 */
 	public Application createApplication(Application application) throws DaasClientException;
+	
+	/**
+	 * Update an application
+	 * 
+	 * @param application
+	 * @return
+	 * @throws DaasClientException
+	 */
+	public Application updateApplication(Application application) throws DaasClientException;
 
 	/**
 	 * Deletes an application
