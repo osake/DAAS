@@ -592,6 +592,7 @@ public class DocumentDaoImpl extends OrientDbDaoSupport implements DocumentDao {
 			else
 				sqlOrderBy = sqlOrderBy + propertyName + " desc and ";
 		}
+		
 		String sql = "SELECT * FROM " + entityType + " ORDER BY " + sqlOrderBy + DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName + "'";
 		OSQLAsynchQuery<ODocument> asynchQuery = new OSQLSynchQuery<ODocument>(sql);
 		asynchQuery.setFetchPlan(fetchPlan);
