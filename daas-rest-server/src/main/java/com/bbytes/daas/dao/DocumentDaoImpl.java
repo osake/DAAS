@@ -571,8 +571,42 @@ public class DocumentDaoImpl extends OrientDbDaoSupport implements DocumentDao {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see com.bbytes.daas.dao.DocumentDao#findByPropertyRangeV7(java.lang.String, java.lang.String, java.lang.String, com.bbytes.daas.domain.DataType, java.lang.String, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.dao.DocumentDao#findByProperty(java.lang.String, java.lang.String,
+	 * java.util.Map)
+	 */
+	@Override
+	public List<ODocument> findByProperty(String applicationName, String entityType,
+			Map<String, Boolean> propertyNameToOrderBy) throws DaasEntityNotFoundException {
+		OrientGraph db = getDataBase();
+
+		String sqlOrderBy = "";
+
+		for (Iterator<String> iterator = propertyNameToOrderBy.keySet().iterator(); iterator.hasNext();) {
+			String propertyName = iterator.next();
+			Boolean asc = propertyNameToOrderBy.get(propertyName);
+			if (asc)
+				sqlOrderBy = sqlOrderBy + propertyName + " asc and ";
+			else
+				sqlOrderBy = sqlOrderBy + propertyName + " desc and ";
+		}
+		String sql = "SELECT * FROM " + entityType + " ORDER BY " + sqlOrderBy + DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName + "'";
+		OSQLAsynchQuery<ODocument> asynchQuery = new OSQLSynchQuery<ODocument>(sql);
+		asynchQuery.setFetchPlan(fetchPlan);
+
+		List<ODocument> result = db.getRawGraph().query(asynchQuery);
+
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.bbytes.daas.dao.DocumentDao#findByPropertyRangeV7(java.lang.String,
+	 * java.lang.String, java.lang.String, com.bbytes.daas.domain.DataType, java.lang.String,
+	 * java.lang.String)
 	 */
 	@Override
 	public List<ODocument> findByPropertyRangeV7(String applicationName, String entityType, String propertyName,
@@ -607,16 +641,18 @@ public class DocumentDaoImpl extends OrientDbDaoSupport implements DocumentDao {
 			break;
 		}
 
-		if(sql =="") {
+		if (sql == "") {
 			if (startRange == null || startRange.isEmpty()) {
-				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " <= " + "'" + endRange + "'" + " and "
-						+ DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName + "'";
+				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " <= " + "'" + endRange + "'"
+						+ " and " + DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName
+						+ "'";
 			} else if (endRange == null || endRange.isEmpty()) {
-				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= " + "'" + startRange + "'" + " and "
-						+ DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName + "'";
+				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= " + "'" + startRange + "'"
+						+ " and " + DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName
+						+ "'";
 			} else {
-				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= " + "'" + startRange + "'" + " and "
-						+ propertyName + " <= " + "'" + endRange + "'" + " and "
+				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= " + "'" + startRange + "'"
+						+ " and " + propertyName + " <= " + "'" + endRange + "'" + " and "
 						+ DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName + "'";
 			}
 		}
@@ -627,35 +663,39 @@ public class DocumentDaoImpl extends OrientDbDaoSupport implements DocumentDao {
 
 		return result;
 	}
-	
+
 	private String getSqlForDate(String applicationName, String entityType, String propertyName,
 			DataType propertyDataType, String startRange, String endRange) {
 		String sql = "";
-//		select * from deals  WHERE validTo >= date('2013-01-25 00:00:00', 'yyyy-MM-dd HH:mm:ss')
+		// select * from deals WHERE validTo >= date('2013-01-25 00:00:00', 'yyyy-MM-dd HH:mm:ss')
 		if (propertyDataType.equals(DataType.DATE)) {
 			if (startRange == null || startRange.isEmpty()) {
-				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " <= date('" + endRange + "','yyyy-MM-dd') and "
-						+ DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName + "'";
+				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " <= date('" + endRange
+						+ "','yyyy-MM-dd') and " + DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'"
+						+ applicationName + "'";
 			} else if (endRange == null || endRange.isEmpty()) {
-				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= date('" + startRange + "','yyyy-MM-dd') and "
-						+ DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName + "'";
+				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= date('" + startRange
+						+ "','yyyy-MM-dd') and " + DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'"
+						+ applicationName + "'";
 			} else {
-				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= date('" + startRange + "','yyyy-MM-dd') and "
-						+ propertyName + " <= date('" + endRange + "','yyyy-MM-dd') and "
+				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= date('" + startRange
+						+ "','yyyy-MM-dd') and " + propertyName + " <= date('" + endRange + "','yyyy-MM-dd') and "
 						+ DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName + "'";
 			}
-		}
-		else if (propertyDataType.equals(DataType.DATETIME)) {
+		} else if (propertyDataType.equals(DataType.DATETIME)) {
 			if (startRange == null || startRange.isEmpty()) {
-				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " <= date('" + endRange + "','yyyy-MM-dd HH:mm:ss') and "
-						+ DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName + "'";
+				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " <= date('" + endRange
+						+ "','yyyy-MM-dd HH:mm:ss') and " + DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = "
+						+ "'" + applicationName + "'";
 			} else if (endRange == null || endRange.isEmpty()) {
-				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= date('" + startRange + "','yyyy-MM-dd HH:mm:ss') and "
-						+ DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName + "'";
+				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= date('" + startRange
+						+ "','yyyy-MM-dd HH:mm:ss') and " + DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = "
+						+ "'" + applicationName + "'";
 			} else {
-				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= date('" + startRange + "','yyyy-MM-dd HH:mm:ss') and "
-						+ propertyName + " <= date('" + endRange + "','yyyy-MM-dd HH:mm:ss') and "
-						+ DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = " + "'" + applicationName + "'";
+				sql = "SELECT * FROM " + entityType + "  WHERE " + propertyName + " >= date('" + startRange
+						+ "','yyyy-MM-dd HH:mm:ss') and " + propertyName + " <= date('" + endRange
+						+ "','yyyy-MM-dd HH:mm:ss') and " + DaasDefaultFields.FIELD_APPLICATION_NAME.toString() + " = "
+						+ "'" + applicationName + "'";
 			}
 		}
 		return sql;
@@ -788,4 +828,5 @@ public class DocumentDaoImpl extends OrientDbDaoSupport implements DocumentDao {
 		}
 		return (doc != null);
 	}
+
 }

@@ -79,6 +79,16 @@ public interface DocumentDao {
 	public List<ODocument> findByProperty(String applicationName, String entityType, String propertyName, String propertyValue) throws DaasEntityNotFoundException;
 
 	/**
+	 * Property based Order by query
+	 * @param applicationName
+	 * @param entityType table name
+	 * @param propertyNameToOrderBy true means asc
+	 * @return
+	 * @throws DaasEntityNotFoundException
+	 */
+	public List<ODocument> findByProperty(String applicationName, String entityType,Map<String,Boolean> propertyNameToOrderBy) throws DaasEntityNotFoundException;
+
+	/**
 	 * Use {@link #findByPropertyRangeV7(String, String, String, DataType, String, String)} for Orient DB 1.7
 	 * @param applicationName
 	 * @param entityType
